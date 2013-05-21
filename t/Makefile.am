@@ -1,4 +1,4 @@
-TESTBIN = basic
+TESTBIN = basic yuv4mpeg2
 
 TESTPERL = perl.t
 
@@ -9,7 +9,7 @@ noinst_LTLIBRARIES = libtest-support.la
 libtest_support_la_SOURCES = tap.c tap.h framework.c framework.h
 libtest_support_la_LDFLAGS = -static
 
-LDADD = libtest-support.la
+LDADD = libtest-support.la ../libtimewarp.la
 
 test: $(TESTBIN)
 	prove -e ./wrap $(TESTBIN) $(TESTPERL)

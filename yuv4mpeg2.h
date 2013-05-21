@@ -53,6 +53,8 @@ typedef struct {
 
 void y4m2__parse_parms(y4m2_parameters *parms, char *buf);
 void y4m2__format_parms(FILE *out, const y4m2_parameters *parms);
+void *y4m2_alloc(size_t size);
+void y4m2_free(void *m);
 
 y4m2_parameters *y4m2_new_parms(void);
 void y4m2_free_parms(y4m2_parameters *parms);

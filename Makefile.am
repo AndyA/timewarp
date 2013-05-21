@@ -8,7 +8,7 @@ lib_LTLIBRARIES = libtimewarp.la
 
 bin_PROGRAMS = timewarp
 
-libtimewarp_la_SOURCES = yuv4mpeg2.h yuv4mpeg2.c
+libtimewarp_la_SOURCES = yuv4mpeg2.h yuv4mpeg2.c merge.h merge.c
 
 libtimewarp_la_LDFLAGS = -avoid-version -static
 

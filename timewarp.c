@@ -3,10 +3,14 @@
 #include <stdio.h>
 
 #include "yuv4mpeg2.h"
+#include "merge.h"
 
 int main(void) {
   y4m2_output *out = y4m2_output_file(stdout);
-  y4m2_parse(stdin, out);
+
+  y4m2_output *merge_out = merge_hook(out);
+  y4m2_parse(stdin, merge_out);
+
   y4m2_free_output(out);
   return 0;
 }

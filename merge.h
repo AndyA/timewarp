@@ -5,7 +5,11 @@
 
 #include "yuv4mpeg2.h"
 
-y4m2_output *merge_hook(y4m2_output *out);
+typedef struct {
+  unsigned long frames;
+} merge_options;
+
+y4m2_output *merge_hook(y4m2_output *out, const merge_options *opt);
 
 #endif
 

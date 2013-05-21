@@ -8,7 +8,9 @@
 int main(void) {
   y4m2_output *out = y4m2_output_file(stdout);
 
-  y4m2_output *merge_out = merge_hook(out);
+  merge_options mo = { .frames = 10 };
+  y4m2_output *merge_out = merge_hook(out, &mo);
+
   y4m2_parse(stdin, merge_out);
 
   y4m2_free_output(out);

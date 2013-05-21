@@ -2,7 +2,12 @@
 
 #include <stdio.h>
 
+#include "yuv4mpeg2.h"
+
 int main(void) {
+  y4m2_output *out = y4m2_output_file(stdout);
+  y4m2_parse(stdin, out);
+  y4m2_free_output(out);
   return 0;
 }
 

@@ -29,7 +29,6 @@ static jd_var *load_json(jd_var *out, FILE *f) {
 }
 
 static y4m2_output *filter_hook(const char *name, y4m2_output *out, jd_var *opt) {
-/*  jd_fprintf(stderr, "Configuring %s with %lJ\n", name, opt);*/
   if (!strcmp("streak", name)) return streak_hook(out, opt);
   if (!strcmp("merge", name)) return merge_hook(out, opt);
   if (!strcmp("minmax", name)) return minmax_hook(out, opt);

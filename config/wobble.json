@@ -1,0 +1,22 @@
+[
+   {
+      "filter" : "merge",
+      "options" : {
+         "frames" : 10
+      }
+   },
+   {
+      "filter" : "wobble",
+      "options" : {
+         "Cb" : {
+            "decay" : 0
+         },
+         "Cr" : {
+            "decay" : 0
+         },
+         "Y" : {
+            "decay" : 0.6
+         }
+      }
+   }
+]

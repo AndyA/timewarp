@@ -13,6 +13,7 @@ libtimewarp_la_SOURCES = \
 	merge.h merge.c \
 	minmax.h minmax.c \
 	streak.h streak.c \
+	wobble.h wobble.c \
 	pass.h pass.c
 
 libtimewarp_la_LDFLAGS = -avoid-version -static

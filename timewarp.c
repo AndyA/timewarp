@@ -10,6 +10,7 @@
 #include "merge.h"
 #include "minmax.h"
 #include "streak.h"
+#include "wobble.h"
 
 static jd_var *load_string(jd_var *out, FILE *f) {
   char buf[512];
@@ -30,6 +31,7 @@ static jd_var *load_json(jd_var *out, FILE *f) {
 
 static y4m2_output *filter_hook(const char *name, y4m2_output *out, jd_var *opt) {
   if (!strcmp("streak", name)) return streak_hook(out, opt);
+  if (!strcmp("wobble", name)) return wobble_hook(out, opt);
   if (!strcmp("merge", name)) return merge_hook(out, opt);
   if (!strcmp("minmax", name)) return minmax_hook(out, opt);
   fprintf(stderr, "Unknown filter: %s\n", name);

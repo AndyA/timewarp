@@ -1,0 +1,8 @@
+[
+   {
+      "filter" : "streak",
+      "options" : {
+         "decay" : 0.7
+      }
+   }
+]

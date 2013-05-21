@@ -48,7 +48,7 @@ static void wobble__frame(y4m2_frame *frame, const y4m2_parameters *parms, wobbl
       double decay = wrk->plane[p].decay;
       double scale = wrk->plane[p].scale;
       for (unsigned i = 0; i < frame->i.plane[p].size; i++) {
-        *ap = *ap * decay + *pp++ - *fp++;
+        *ap = *ap * decay + *fp++ - *pp++;
         *mp++ += *ap++ / scale;
       }
       wrk->plane[p].scale = scale * decay + 1;

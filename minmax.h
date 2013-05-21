@@ -3,14 +3,11 @@
 #ifndef MINMAX_H_
 #define MINMAX_H_
 
+#include <jd_pretty.h>
+
 #include "yuv4mpeg2.h"
 
-typedef struct {
-  unsigned long frames;
-  unsigned int min;
-} minmax_options;
-
-y4m2_output *minmax_hook(y4m2_output *out, const minmax_options *opt);
+y4m2_output *minmax_hook(y4m2_output *out, jd_var *opt);
 
 #endif
 

@@ -3,13 +3,11 @@
 #ifndef MERGE_H_
 #define MERGE_H_
 
+#include <jd_pretty.h>
+
 #include "yuv4mpeg2.h"
 
-typedef struct {
-  unsigned long frames;
-} merge_options;
-
-y4m2_output *merge_hook(y4m2_output *out, const merge_options *opt);
+y4m2_output *merge_hook(y4m2_output *out, jd_var *opt);
 
 #endif
 

@@ -7,8 +7,9 @@
 #include "yuv4mpeg2.h"
 
 typedef struct {
-  minmax_options opt;
   y4m2_output *out;
+  unsigned frames;
+  int min;
   unsigned phase;
   y4m2_frame *acc;
 } minmax__work;
@@ -22,7 +23,7 @@ static void minmax__free(minmax__work *wrk) {
 
 static void minmax__frame(y4m2_frame *frame, const y4m2_parameters *parms, minmax__work *wrk) {
   if (wrk->acc) {
-    if (wrk->opt.min) {
+    if (wrk->min) {
       for (unsigned i = 0; i < frame->i.size; i++) {
         if (frame->buf[i] < wrk->acc->buf[i])
           wrk->acc->buf[i] = frame->buf[i];
@@ -39,7 +40,7 @@ static void minmax__frame(y4m2_frame *frame, const y4m2_parameters *parms, minma
     wrk->acc = y4m2_retain_frame(frame);
   }
 
-  if (++wrk->phase == wrk->opt.frames) {
+  if (++wrk->phase == wrk->frames) {
     y4m2_emit_frame(wrk->out, parms, wrk->acc);
     y4m2_release_frame(wrk->acc);
     wrk->acc = NULL;
@@ -66,10 +67,11 @@ static void minmax__callback(y4m2_reason reason,
   }
 }
 
-y4m2_output *minmax_hook(y4m2_output *out, const minmax_options *opt) {
+y4m2_output *minmax_hook(y4m2_output *out, jd_var *opt) {
   minmax__work *wrk = y4m2_alloc(sizeof(minmax__work));
-  wrk->opt = *opt;
   wrk->out = out;
+  wrk->frames = jd_get_int(jd_lv(opt, "$.frames"));
+  wrk->min = jd_get_int(jd_lv(opt, "$.min"));
   return y4m2_output_next(minmax__callback, wrk);
 }
 

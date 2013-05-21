@@ -3,12 +3,14 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <jd_pretty.h>
+
 #include "merge.h"
 #include "yuv4mpeg2.h"
 
 typedef struct {
-  merge_options opt;
   y4m2_output *out;
+  unsigned frames;
   unsigned phase;
   uint32_t *avg;
 } merge__work;
@@ -34,8 +36,8 @@ static void merge__frame(y4m2_frame *frame, const y4m2_parameters *parms, merge_
   if (!wrk->avg)
     wrk->avg = y4m2_alloc(frame->i.size * sizeof(uint32_t));
   merge__add(wrk->avg, frame);
-  if (++wrk->phase == wrk->opt.frames) {
-    merge__scale(frame, wrk->avg, wrk->opt.frames);
+  if (++wrk->phase == wrk->frames) {
+    merge__scale(frame, wrk->avg, wrk->frames);
     y4m2_emit_frame(wrk->out, parms, frame);
     memset(wrk->avg, 0, frame->i.size * sizeof(uint32_t));
     wrk->phase = 0;
@@ -61,10 +63,10 @@ static void merge__callback(y4m2_reason reason,
   }
 }
 
-y4m2_output *merge_hook(y4m2_output *out, const merge_options *opt) {
+y4m2_output *merge_hook(y4m2_output *out, jd_var *opt) {
   merge__work *wrk = y4m2_alloc(sizeof(merge__work));
-  wrk->opt = *opt;
   wrk->out = out;
+  wrk->frames = jd_get_int(jd_lv(opt, "$.frames"));
   return y4m2_output_next(merge__callback, wrk);
 }
 

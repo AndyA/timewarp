@@ -12,6 +12,7 @@ libtimewarp_la_SOURCES = \
 	yuv4mpeg2.h yuv4mpeg2.c \
 	merge.h merge.c \
 	minmax.h minmax.c \
+	streak.h streak.c \
 	pass.h pass.c
 
 libtimewarp_la_LDFLAGS = -avoid-version -static

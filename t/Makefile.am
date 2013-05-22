@@ -2,7 +2,7 @@ TESTBIN = basic yuv4mpeg2 merge
 
 TESTPERL = perl.t
 
-noinst_PROGRAMS = wrap $(TESTBIN)
+noinst_PROGRAMS = wrap plotpipe $(TESTBIN)
 
 noinst_LTLIBRARIES = libtest-support.la
 

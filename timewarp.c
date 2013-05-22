@@ -7,11 +7,7 @@
 #include <jd_pretty.h>
 
 #include "yuv4mpeg2.h"
-#include "merge.h"
-#include "minmax.h"
-#include "streak.h"
-#include "wobble.h"
-#include "massive.h"
+#include "filter.h"
 
 static jd_var *load_string(jd_var *out, FILE *f) {
   char buf[512];
@@ -30,16 +26,6 @@ static jd_var *load_json(jd_var *out, FILE *f) {
   return out;
 }
 
-static y4m2_output *filter_hook(const char *name, y4m2_output *out, jd_var *opt) {
-  if (!strcmp("streak", name)) return streak_hook(out, opt);
-  if (!strcmp("wobble", name)) return wobble_hook(out, opt);
-  if (!strcmp("merge", name)) return merge_hook(out, opt);
-  if (!strcmp("minmax", name)) return minmax_hook(out, opt);
-  if (!strcmp("massive", name)) return massive_hook(out, opt);
-  fprintf(stderr, "Unknown filter: %s\n", name);
-  exit(1);
-}
-
 int main(int argc, char *argv[]) {
   scope {
     jd_var *config = jd_nav(10);
@@ -56,15 +42,9 @@ int main(int argc, char *argv[]) {
     }
 
     y4m2_output *out = y4m2_output_file(stdout);
-    y4m2_output *last_out = out;
+    y4m2_output *filt_out = filter_build(out, config);
 
-    for (int i = jd_count(config); --i >= 0;) {
-      jd_var *filt = jd_get_idx(config, i);
-      last_out = filter_hook(jd_bytes(jd_lv(filt, "$.filter"), NULL),
-                             last_out, jd_lv(filt, "$.options"));
-    }
-
-    y4m2_parse(stdin, last_out);
+    y4m2_parse(stdin, filt_out);
     y4m2_free_output(out);
   }
   return 0;

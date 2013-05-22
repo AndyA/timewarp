@@ -1,23 +1,33 @@
 [
    {
+      "filter" : "merge",
+      "options" : {
+         "frames" : 10
+      }
+   },
+   {
       "filter" : "massive",
       "options" : {
          "Cb" : {
             "disabled" : false,
             "drag" : 0.05,
-            "mass" : 7.3
+            "mass" : 2.3,
+            "rms_decay" : 0.999,
+            "rms_inv_weight" : 100
          },
          "Cr" : {
             "disabled" : false,
             "drag" : 0.04,
-            "mass" : 5.2
+            "mass" : 3.2,
+            "rms_decay" : 0.999,
+            "rms_inv_weight" : 100
          },
          "Y" : {
             "disabled" : false,
-            "drag" : 0.01,
-            "mass" : 3.8,
-            "rms_decay" : 0.9,
-            "rms_weight" : 0.5 
+            "drag" : 0.03,
+            "mass" : 1,
+            "rms_decay" : 0.9999,
+            "rms_inv_weight" : 100
          }
       }
    }

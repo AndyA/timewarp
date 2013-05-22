@@ -1,4 +1,4 @@
-TESTBIN = basic yuv4mpeg2
+TESTBIN = basic yuv4mpeg2 merge
 
 TESTPERL = perl.t
 
@@ -6,7 +6,10 @@ noinst_PROGRAMS = wrap $(TESTBIN)
 
 noinst_LTLIBRARIES = libtest-support.la
 
-libtest_support_la_SOURCES = tap.c tap.h framework.c framework.h
+libtest_support_la_SOURCES = \
+	tap.c tap.h framework.c framework.h \
+	filter_harness.c filter_harness.h
+
 libtest_support_la_LDFLAGS = -static
 
 LDADD = libtest-support.la ../libtimewarp.la

@@ -10,6 +10,7 @@ bin_PROGRAMS = timewarp
 
 libtimewarp_la_SOURCES = \
 	yuv4mpeg2.h yuv4mpeg2.c \
+	average.h average.c \
 	merge.h merge.c \
 	minmax.h minmax.c \
 	streak.h streak.c \

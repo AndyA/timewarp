@@ -139,21 +139,23 @@ void y4m2_parse_frame_info(y4m2_frame_info *info, const y4m2_parameters *parms) 
   }
 }
 
-y4m2_frame *y4m2_new_frame(const y4m2_parameters *parms) {
-  y4m2_frame *frame;
-  y4m2_frame_info info;
-  y4m2_parse_frame_info(&info, parms);
-
-  frame = y4m2_alloc(sizeof(y4m2_frame));
-  uint8_t *buf = frame->buf = y4m2_alloc(info.size);
+y4m2_frame *y4m2_new_frame_info(const y4m2_frame_info *info) {
+  y4m2_frame *frame = y4m2_alloc(sizeof(y4m2_frame));
+  uint8_t *buf = frame->buf = y4m2_alloc(info->size);
 
   for (int i = 0; i < Y4M2_N_PLANE; i++) {
     frame->plane[i] = buf;
-    buf += info.plane[i].size;
+    buf += info->plane[i].size;
   }
 
-  frame->i = info;
+  frame->i = *info;
   return y4m2_retain_frame(frame);
+}
+
+y4m2_frame *y4m2_new_frame(const y4m2_parameters *parms) {
+  y4m2_frame_info info;
+  y4m2_parse_frame_info(&info, parms);
+  return y4m2_new_frame_info(&info);
 }
 
 y4m2_frame *y4m2_clone_frame(const y4m2_frame *frame) {

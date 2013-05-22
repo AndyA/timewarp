@@ -5,16 +5,19 @@
          "Cb" : {
             "disabled" : false,
             "drag" : 0.05,
-            "mass" : 7.3 
+            "mass" : 7.3
          },
          "Cr" : {
             "disabled" : false,
             "drag" : 0.04,
-            "mass" : 5.2 
+            "mass" : 5.2
          },
          "Y" : {
+            "disabled" : false,
             "drag" : 0.03,
-            "mass" : 3.8 
+            "mass" : 3.8,
+            "rms_decay" : 0.9999,
+            "rms_weight" : 0.001
          }
       }
    }

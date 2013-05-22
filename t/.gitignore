@@ -3,6 +3,7 @@
 /*.o
 /basic
 /core
-/yuv4mpeg2
+/merge
 /tags
 /wrap
+/yuv4mpeg2

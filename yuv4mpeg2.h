@@ -63,6 +63,7 @@ y4m2_parameters *y4m2_clone_parms(const y4m2_parameters *orig);
 const char *y4m2_get_parm(const y4m2_parameters *parms, const char *name);
 void y4m2_set_parm(y4m2_parameters *parm, const char *name, const char *value);
 void y4m2_parse_frame_info(y4m2_frame_info *info, const y4m2_parameters *parms);
+y4m2_frame *y4m2_new_frame_info(const y4m2_frame_info *info);
 y4m2_frame *y4m2_new_frame(const y4m2_parameters *parms);
 y4m2_frame *y4m2_clone_frame(const y4m2_frame *frame);
 void y4m2_free_frame(y4m2_frame *frame);

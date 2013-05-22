@@ -19,7 +19,7 @@ static void test_merge(void) {
       fh_push_frame(test_out, i, i, i);
     }
 
-    /*    jd_fprintf(stderr, "# capture: %lJ", &capture);*/
+    y4m2_emit_end(test_out);
 
     ok(jd_count(&capture) == 5, "50 in, 5 out");
 

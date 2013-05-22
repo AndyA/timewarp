@@ -313,6 +313,7 @@ int y4m2_emit_end(y4m2_output *out) {
     break;
   case Y4M2_OUTPUT_NEXT:
     out->o.n.cb(Y4M2_END, NULL, NULL, out->o.n.ctx);
+    y4m2_free_output(out);
     break;
   }
   return 0;

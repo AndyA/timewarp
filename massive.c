@@ -30,6 +30,8 @@ typedef struct {
     double drag;
     double rms_fwd_weight;
     double rms_inv_weight;
+    double intensity_fwd_mass;
+    double intensity_inv_mass;
     average average;
     average rms_acc;
   } plane[Y4M2_N_PLANE];
@@ -80,10 +82,15 @@ static void massive__frame(y4m2_frame *frame,
         double mass = wrk->plane[p].mass;
         double fwd_weight = wrk->plane[p].rms_fwd_weight;
         double inv_weight = wrk->plane[p].rms_inv_weight;
+        double fwd_mass = wrk->plane[p].intensity_fwd_mass;
+        double inv_mass = wrk->plane[p].intensity_inv_mass;
+
         int do_rms = fwd_weight != 0 || inv_weight != 1;
 
         for (unsigned i = 0; i < frame->i.plane[p].size; i++) {
-          double local_mass = mass;
+          double local_mass = mass +
+                              (*fp * fwd_mass) +
+                              ((255 - *fp) * inv_mass);
 
           if (do_rms) {
             dp->average = average_next(&wrk->plane[p].average, dp->average, *fp);
@@ -149,12 +156,17 @@ y4m2_output *massive_hook(y4m2_output *out, jd_var *opt) {
   wrk->out = out;
   for (unsigned p = 0; p < Y4M2_N_PLANE; p++) {
     jd_var *slot = jd_rv(opt, "$.%s", plane_key[p]);
+
     wrk->plane[p].disabled = util_get_int(jd_rv(slot, "$.disabled"), 0);
     wrk->plane[p].mass = util_get_real(jd_rv(slot, "$.mass"), 1);
     wrk->plane[p].drag = util_get_real(jd_rv(slot, "$.drag"), 0);
 
     wrk->plane[p].rms_fwd_weight = util_get_real(jd_rv(slot, "$.rms_fwd_weight"), 0);
     wrk->plane[p].rms_inv_weight = util_get_real(jd_rv(slot, "$.rms_inv_weight"), 1);
+
+    wrk->plane[p].intensity_fwd_mass = util_get_real(jd_rv(slot, "$.intensity_fwd_mass"), 0);
+    wrk->plane[p].intensity_inv_mass = util_get_real(jd_rv(slot, "$.intensity_inv_mass"), 0);
+
     average_config(&wrk->plane[p].average, slot, "rms");
     average_config(&wrk->plane[p].rms_acc, slot, "rms");
   }

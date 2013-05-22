@@ -3,26 +3,32 @@
       "filter" : "massive",
       "options" : {
          "Cb" : {
-            "disabled" : false,
+            "disabled" : true,
             "drag" : 0.1,
-            "mass" : 2.3,
-            "rms_decay" : 0.999,
-            "rms_inv_weight" : 140
+            "intensity_fwd_mass" : 2,
+            "intensity_inv_mass" : 0,
+            "mass" : 14.3
          },
          "Cr" : {
-            "disabled" : false,
+            "disabled" : true,
             "drag" : 0.1,
-            "mass" : 3.2,
-            "rms_decay" : 0.99,
-            "rms_inv_weight" : 120
+            "intensity_fwd_mass" : 1.3,
+            "intensity_inv_mass" : 0,
+            "mass" : 15.2
          },
          "Y" : {
             "disabled" : false,
-            "drag" : 0.03,
-            "mass" : 1,
-            "rms_decay" : 0.9999,
-            "rms_inv_weight" : 100
+            "drag" : 0.1,
+            "intensity_fwd_mass" : 5,
+            "intensity_inv_mass" : 5,
+            "mass" : 3.25
          }
+      }
+   },
+   {
+      "filter" : "streak",
+      "options" : {
+         "decay" : 0.9
       }
    }
 ]

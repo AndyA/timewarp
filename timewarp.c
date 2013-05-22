@@ -11,6 +11,7 @@
 #include "minmax.h"
 #include "streak.h"
 #include "wobble.h"
+#include "massive.h"
 
 static jd_var *load_string(jd_var *out, FILE *f) {
   char buf[512];
@@ -34,6 +35,7 @@ static y4m2_output *filter_hook(const char *name, y4m2_output *out, jd_var *opt)
   if (!strcmp("wobble", name)) return wobble_hook(out, opt);
   if (!strcmp("merge", name)) return merge_hook(out, opt);
   if (!strcmp("minmax", name)) return minmax_hook(out, opt);
+  if (!strcmp("massive", name)) return massive_hook(out, opt);
   fprintf(stderr, "Unknown filter: %s\n", name);
   exit(1);
 }

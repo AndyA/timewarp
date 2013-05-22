@@ -1,0 +1,21 @@
+[
+   {
+      "filter" : "massive",
+      "options" : {
+         "Cb" : {
+            "disabled" : false,
+            "drag" : 0.05,
+            "mass" : 7.3 
+         },
+         "Cr" : {
+            "disabled" : false,
+            "drag" : 0.04,
+            "mass" : 5.2 
+         },
+         "Y" : {
+            "drag" : 0.03,
+            "mass" : 3.8 
+         }
+      }
+   }
+]

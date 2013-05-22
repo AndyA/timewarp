@@ -14,10 +14,10 @@
          },
          "Y" : {
             "disabled" : false,
-            "drag" : 0.03,
+            "drag" : 0.01,
             "mass" : 3.8,
-            "rms_decay" : 0.9999,
-            "rms_weight" : 0.001
+            "rms_decay" : 0.9,
+            "rms_weight" : 0.5 
          }
       }
    }

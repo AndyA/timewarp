@@ -59,6 +59,7 @@ int main(int argc, char *argv[]) {
     jd_var capture = JD_INIT;
     jd_var *lp, *line = jd_nv();
     jd_var *frame = jd_nv();
+    unsigned row = 0;
 
     for (int i = 1; i < argc; i++) {
       FILE *f = fopen(argv[i], "r");
@@ -75,13 +76,14 @@ int main(int argc, char *argv[]) {
     y4m2_output *filt_out = filter_build(out, config);
 
     while (lp = read_line(line, stdin), lp) {
+      while (jd_count(lp) < 3) jd_set_int(jd_push(lp, 1), 0);
       fh_push_frame(filt_out,
                     jd_get_int(jd_get_idx(lp, 0)),
                     jd_get_int(jd_get_idx(lp, 1)),
                     jd_get_int(jd_get_idx(lp, 2)));
 
       while (jd_shift(&capture, 1, frame)) {
-        printf("%ld\t%ld\t%ld\n",
+        printf("%u\t%ld\t%ld\t%ld\n", row++,
                jd_get_int(jd_get_idx(jd_get_idx(frame, 0), 0)),
                jd_get_int(jd_get_idx(jd_get_idx(frame, 1), 0)),
                jd_get_int(jd_get_idx(jd_get_idx(frame, 2), 0)));

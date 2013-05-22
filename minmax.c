@@ -5,6 +5,7 @@
 
 #include "minmax.h"
 #include "yuv4mpeg2.h"
+#include "util.h"
 
 typedef struct {
   y4m2_output *out;
@@ -70,8 +71,8 @@ static void minmax__callback(y4m2_reason reason,
 y4m2_output *minmax_hook(y4m2_output *out, jd_var *opt) {
   minmax__work *wrk = y4m2_alloc(sizeof(minmax__work));
   wrk->out = out;
-  wrk->frames = jd_get_int(jd_lv(opt, "$.frames"));
-  wrk->min = jd_get_int(jd_lv(opt, "$.min"));
+  wrk->frames = util_get_int(jd_rv(opt, "$.frames"), 100);
+  wrk->min = util_get_int(jd_rv(opt, "$.min"), 0);
   return y4m2_output_next(minmax__callback, wrk);
 }
 

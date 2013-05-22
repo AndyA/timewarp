@@ -9,8 +9,10 @@
 #include "yuv4mpeg2.h"
 #include "average.h"
 #include "massive.h"
+#include "util.h"
 
 #define SHIFT 23
+#define SIGMA 0.00001
 
 typedef struct {
   double position;
@@ -81,10 +83,11 @@ static void massive__frame(y4m2_frame *frame,
         for (unsigned i = 0; i < frame->i.plane[p].size; i++) {
           double local_mass = mass;
           if (do_rms) {
-            dp->average = average_next(&(wrk->plane[p].average), dp->average, *fp);
+            dp->average = average_next(&wrk->plane[p].average, dp->average, *fp);
             double dy = *fp - dp->average;
-            dp->rms = average_next(&(wrk->plane[p].rms_acc), dp->rms, dy * dy);
-            local_mass = mass; // + wrk->plane[p].rms_weight * sqrt(dp->rms);
+            dp->rms = average_next(&wrk->plane[p].rms_acc, dp->rms, dy * dy);
+            local_mass = mass + wrk->plane[p].rms_weight * sqrt(dp->rms);
+            if (local_mass < SIGMA) local_mass = SIGMA;
           }
           double force = (*fp - dp->position) - (dp->velocity * fabs(dp->velocity) * drag);
           dp->velocity += force / local_mass;
@@ -95,6 +98,10 @@ static void massive__frame(y4m2_frame *frame,
           *pp++ = (uint8_t) sample;
           fp++;
           dp++;
+        }
+        if (do_rms) {
+          average_update(&wrk->plane[p].average);
+          average_update(&wrk->plane[p].rms_acc);
         }
       }
     }
@@ -134,13 +141,14 @@ y4m2_output *massive_hook(y4m2_output *out, jd_var *opt) {
   massive__work *wrk = y4m2_alloc(sizeof(massive__work));
   wrk->out = out;
   for (unsigned p = 0; p < Y4M2_N_PLANE; p++) {
-    wrk->plane[p].disabled = jd_get_int(jd_lv(opt, "$.%s.disabled", plane_key[p]));
-    wrk->plane[p].mass = jd_get_real(jd_lv(opt, "$.%s.mass", plane_key[p]));
-    wrk->plane[p].drag = jd_get_real(jd_lv(opt, "$.%s.drag", plane_key[p]));
+    jd_var *slot = jd_rv(opt, "$.%s", plane_key[p]);
+    wrk->plane[p].disabled = util_get_int(jd_rv(slot, "$.disabled"), 0);
+    wrk->plane[p].mass = util_get_real(jd_rv(slot, "$.mass"), 1);
+    wrk->plane[p].drag = util_get_real(jd_rv(slot, "$.drag"), 0);
 
-    wrk->plane[p].rms_weight = jd_get_real(jd_lv(opt, "$.%s.rms_weight", plane_key[p]));
-    average_config(&(wrk->plane[p].average), opt, "rms_");
-    average_config(&(wrk->plane[p].rms_acc), opt, "rms_");
+    wrk->plane[p].rms_weight = util_get_real(jd_rv(slot, "$.rms_weight"), 0);
+    average_config(&wrk->plane[p].average, slot, "rms");
+    average_config(&wrk->plane[p].rms_acc, slot, "rms");
   }
   return y4m2_output_next(massive__callback, wrk);
 }

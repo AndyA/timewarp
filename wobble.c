@@ -107,7 +107,7 @@ y4m2_output *wobble_hook(y4m2_output *out, jd_var *opt) {
   wobble__work *wrk = y4m2_alloc(sizeof(wobble__work));
   wrk->out = out;
   for (unsigned p = 0; p < Y4M2_N_PLANE; p++) {
-    wrk->plane[p].decay = jd_get_real(jd_lv(opt, "$.%s.decay", plane_key[p]));
+    wrk->plane[p].decay = jd_get_real(jd_rv(opt, "$.%s.decay", plane_key[p]));
     wrk->plane[p].scale = 1;
   }
   return y4m2_output_next(wobble__callback, wrk);

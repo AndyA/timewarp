@@ -7,6 +7,7 @@
 
 #include "merge.h"
 #include "yuv4mpeg2.h"
+#include "util.h"
 
 typedef struct {
   y4m2_output *out;
@@ -66,7 +67,7 @@ static void merge__callback(y4m2_reason reason,
 y4m2_output *merge_hook(y4m2_output *out, jd_var *opt) {
   merge__work *wrk = y4m2_alloc(sizeof(merge__work));
   wrk->out = out;
-  wrk->frames = jd_get_int(jd_lv(opt, "$.frames"));
+  wrk->frames = util_get_int(jd_rv(opt, "$.frames"), 10);
   return y4m2_output_next(merge__callback, wrk);
 }
 

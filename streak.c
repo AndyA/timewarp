@@ -60,7 +60,7 @@ static void streak__callback(y4m2_reason reason,
 y4m2_output *streak_hook(y4m2_output *out, jd_var *opt) {
   streak__work *wrk = y4m2_alloc(sizeof(streak__work));
   wrk->out = out;
-  wrk->decay = jd_get_real(jd_lv(opt, "$.decay"));
+  wrk->decay = jd_get_real(jd_rv(opt, "$.decay"));
   wrk->scale = 1;
   return y4m2_output_next(streak__callback, wrk);
 }

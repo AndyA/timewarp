@@ -28,8 +28,8 @@ y4m2_output *filter_build(y4m2_output *out, jd_var *config) {
 
   for (int i = jd_count(config); --i >= 0;) {
     jd_var *filt = jd_get_idx(config, i);
-    last_out = filter_hook(jd_bytes(jd_lv(filt, "$.filter"), NULL),
-                           last_out, jd_lv(filt, "$.options"));
+    last_out = filter_hook(jd_bytes(jd_rv(filt, "$.filter"), NULL),
+                           last_out, jd_rv(filt, "$.options"));
   }
 
   return last_out;

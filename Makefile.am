@@ -1,5 +1,7 @@
 DIST_SUBDIRS = m4 t
 
+EXTRA_DIST = config misc
+
 SUBDIRS = . t
 
 ACLOCAL_AMFLAGS = -I m4

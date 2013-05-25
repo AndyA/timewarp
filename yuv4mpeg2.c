@@ -158,13 +158,19 @@ y4m2_frame *y4m2_new_frame(const y4m2_parameters *parms) {
   return y4m2_new_frame_info(&info);
 }
 
-y4m2_frame *y4m2_clone_frame(const y4m2_frame *frame) {
+y4m2_frame *y4m2_like_frame(const y4m2_frame *frame) {
   y4m2_frame *nf = y4m2_alloc(sizeof(y4m2_frame));
   *nf = *frame;
   nf->buf = y4m2_alloc(frame->i.size);
-  memcpy(nf->buf, frame->buf, frame->i.size);
   nf->refcnt = 0;
   return y4m2_retain_frame(nf);
+}
+
+y4m2_frame *y4m2_clone_frame(const y4m2_frame *frame) {
+
+  y4m2_frame *nf = y4m2_like_frame(frame);
+  memcpy(nf->buf, frame->buf, frame->i.size);
+  return nf;
 }
 
 void y4m2_free_frame(y4m2_frame *frame) {

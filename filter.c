@@ -7,18 +7,20 @@
 #include <jd_pretty.h>
 
 #include "yuv4mpeg2.h"
+#include "massive.h"
 #include "merge.h"
 #include "minmax.h"
 #include "streak.h"
+#include "stretch.h"
 #include "wobble.h"
-#include "massive.h"
 
 y4m2_output *filter_hook(const char *name, y4m2_output *out, jd_var *opt) {
-  if (!strcmp("streak", name)) return streak_hook(out, opt);
-  if (!strcmp("wobble", name)) return wobble_hook(out, opt);
+  if (!strcmp("massive", name)) return massive_hook(out, opt);
   if (!strcmp("merge", name)) return merge_hook(out, opt);
   if (!strcmp("minmax", name)) return minmax_hook(out, opt);
-  if (!strcmp("massive", name)) return massive_hook(out, opt);
+  if (!strcmp("streak", name)) return streak_hook(out, opt);
+  if (!strcmp("stretch", name)) return stretch_hook(out, opt);
+  if (!strcmp("wobble", name)) return wobble_hook(out, opt);
   fprintf(stderr, "Unknown filter: %s\n", name);
   exit(1);
 }

@@ -1,0 +1,8 @@
+[
+   {
+      "filter" : "merge",
+      "options" : {
+         "frames" : 10
+      }
+   }
+]

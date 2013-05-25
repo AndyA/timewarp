@@ -1,0 +1,14 @@
+[
+   {
+      "filter" : "stretch",
+      "options" : {
+         "frames" : 5
+      }
+   },
+   {
+      "filter" : "merge",
+      "options" : {
+         "frames" : 7
+      }
+   }
+]

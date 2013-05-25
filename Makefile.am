@@ -18,6 +18,7 @@ libtimewarp_la_SOURCES = \
 	merge.h merge.c \
 	minmax.h minmax.c \
 	streak.h streak.c \
+	stretch.h stretch.c \
 	massive.h massive.c \
 	wobble.h wobble.c \
 	pass.h pass.c

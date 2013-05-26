@@ -6,13 +6,14 @@
 
 #include <jd_pretty.h>
 
-#include "yuv4mpeg2.h"
 #include "massive.h"
 #include "merge.h"
 #include "minmax.h"
 #include "streak.h"
 #include "stretch.h"
+#include "util.h"
 #include "wobble.h"
+#include "yuv4mpeg2.h"
 
 y4m2_output *filter_hook(const char *name, y4m2_output *out, jd_var *opt) {
   if (!strcmp("massive", name)) return massive_hook(out, opt);
@@ -30,6 +31,7 @@ y4m2_output *filter_build(y4m2_output *out, jd_var *config) {
 
   for (int i = jd_count(config); --i >= 0;) {
     jd_var *filt = jd_get_idx(config, i);
+    if (util_get_int(jd_rv(filt, "$.disabled"), 0)) continue;
     last_out = filter_hook(jd_bytes(jd_rv(filt, "$.filter"), NULL),
                            last_out, jd_rv(filt, "$.options"));
   }

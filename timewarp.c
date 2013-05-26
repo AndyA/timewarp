@@ -26,19 +26,34 @@ static jd_var *load_json(jd_var *out, FILE *f) {
   return out;
 }
 
+static void apply_patch(jd_var *conf, const char *patch) {
+  scope {
+    jd_var *pv = jd_nsv(patch);
+    int eq = jd_find(pv, jd_nsv("="), 0);
+    if (eq < 0) jd_throw("Bad patch: %V", pv);
+    jd_var *path = jd_trim(jd_nv(), jd_substr(jd_nv(), pv, 0, eq));
+    jd_var *value = jd_substr(jd_nv(), pv, eq + 1, jd_length(pv));
+    jd_assign(jd_lv(conf, jd_bytes(path, NULL)), jd_from_json(jd_nv(), value));
+  }
+}
+
 int main(int argc, char *argv[]) {
   scope {
     jd_var *config = jd_nav(10);
+    int i;
 
-    for (int i = 1; i < argc; i++) {
+    for (i = 1; i < argc; i++) {
+      if (argv[i][0] == '$') continue;
       FILE *f = fopen(argv[i], "r");
-      if (!f) {
-        fprintf(stderr, "Can't read %s: %m\n", argv[i]);
-        exit(1);
-      }
+      if (!f) jd_throw("Can't read %s: %m\n", argv[i]);
       jd_var *cf = load_json(jd_nv(), f);
       jd_append(config, cf);
       fclose(f);
+    }
+
+    for (i = 1; i < argc; i++) {
+      if (argv[i][0] != '$') continue;
+      apply_patch(config, argv[i]);
     }
 
     y4m2_output *out = y4m2_output_file(stdout);

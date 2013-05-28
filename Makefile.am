@@ -6,7 +6,7 @@ SUBDIRS = . t
 
 ACLOCAL_AMFLAGS = -I m4
 
-lib_LTLIBRARIES = libtimewarp.la
+noinst_LTLIBRARIES = libtimewarp.la
 
 bin_PROGRAMS = timewarp
 

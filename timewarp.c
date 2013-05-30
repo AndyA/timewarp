@@ -6,8 +6,15 @@
 
 #include <jd_pretty.h>
 
-#include "yuv4mpeg2.h"
 #include "filter.h"
+#include "massive.h"
+#include "merge.h"
+#include "minmax.h"
+#include "streak.h"
+#include "stretch.h"
+#include "util.h"
+#include "wobble.h"
+#include "yuv4mpeg2.h"
 
 static jd_var *load_string(jd_var *out, FILE *f) {
   char buf[512];
@@ -37,8 +44,16 @@ static void apply_patch(jd_var *conf, const char *patch) {
   }
 }
 
+static void setup(void) {
+  filter_init();
+
+  /* add filters here */
+  merge_register();
+}
+
 int main(int argc, char *argv[]) {
   scope {
+    setup();
     jd_var *config = jd_nav(10);
     int i;
 

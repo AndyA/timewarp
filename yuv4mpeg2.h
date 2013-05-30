@@ -14,7 +14,7 @@ typedef struct {
   char *parm[Y4M2_PARMS];
 } y4m2_parameters;
 
-enum { Y4M2_Y_PLANE , Y4M2_Cb_PLANE , Y4M2_Cr_PLANE, Y4M2_N_PLANE };
+enum {Y4M2_Y_PLANE, Y4M2_Cb_PLANE, Y4M2_Cr_PLANE, Y4M2_N_PLANE};
 
 typedef struct {
   unsigned width;

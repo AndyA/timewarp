@@ -10,7 +10,6 @@
 #include "streak.h"
 #include "stretch.h"
 #include "util.h"
-#include "wobble.h"
 #include "yuv4mpeg2.h"
 
 static jd_var filters = JD_INIT;
@@ -55,19 +54,13 @@ static void filter__callback(y4m2_reason reason,
   }
 }
 
-y4m2_output *filter__hook(const char *name, y4m2_output *out, jd_var *opt) {
-  if (!strcmp("stretch", name)) return stretch_hook(out, opt);
-  if (!strcmp("wobble", name)) return wobble_hook(out, opt);
-  jd_throw("Unknown filter: %s", name);
-}
-
 static void filter__configure(filter *f, jd_var *opt) {
   if (f->configure) f->ctx = f->configure(f->ctx, opt);
 }
 
 y4m2_output *filter_hook(const char *name, y4m2_output *out, jd_var *opt) {
   jd_var *fp = jd_get_ks(&filters, name, 0);
-  if (!fp) return filter__hook(name, out, opt);
+  if (!fp) jd_throw("Unknown filter \"%s\"", name);
 
   filter *f = filter__clone(jd_ptr(fp));
   f->ctx = NULL;

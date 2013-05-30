@@ -21,7 +21,6 @@ libtimewarp_la_SOURCES = \
 	streak.h streak.c \
 	stretch.h stretch.c \
 	massive.h massive.c \
-	wobble.h wobble.c \
 	pass.h pass.c
 
 libtimewarp_la_LDFLAGS = -avoid-version -static

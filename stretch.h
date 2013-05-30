@@ -3,11 +3,7 @@
 #ifndef STRETCH_H_
 #define STRETCH_H_
 
-#include <jd_pretty.h>
-
-#include "yuv4mpeg2.h"
-
-y4m2_output *stretch_hook(y4m2_output *out, jd_var *opt);
+void stretch_register(void);
 
 #endif
 

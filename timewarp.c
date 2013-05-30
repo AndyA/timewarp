@@ -13,7 +13,6 @@
 #include "streak.h"
 #include "stretch.h"
 #include "util.h"
-#include "wobble.h"
 #include "yuv4mpeg2.h"
 
 static jd_var *load_string(jd_var *out, FILE *f) {
@@ -52,6 +51,7 @@ static void setup(void) {
   massive_register();
   minmax_register();
   streak_register();
+  stretch_register();
 }
 
 int main(int argc, char *argv[]) {

@@ -35,9 +35,9 @@ void filter_register(const char *name, filter *f) {
                 jd_free);
 }
 
-static void filter__free(filter *f) {
-  jd_release(&f->config);
-  jd_free(f);
+static void filter__free(filter *filt) {
+  jd_release(&filt->config);
+  jd_free(filt);
 }
 
 static void filter__callback(y4m2_reason reason,

@@ -24,9 +24,6 @@ struct filter {
   jd_var config;
   y4m2_output *out;
   void *ctx;
-
-  jd_var model;
-  unsigned idx;
 };
 
 void filter_init(void);

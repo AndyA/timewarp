@@ -8,7 +8,6 @@
 
 #include "filter.h"
 #include "massive.h"
-#include "merge.h"
 #include "minmax.h"
 #include "streak.h"
 #include "stretch.h"
@@ -60,7 +59,6 @@ static void filter__callback(y4m2_reason reason,
 
 y4m2_output *filter__hook(const char *name, y4m2_output *out, jd_var *opt) {
   if (!strcmp("massive", name)) return massive_hook(out, opt);
-  if (!strcmp("merge", name)) return merge_hook(out, opt);
   if (!strcmp("minmax", name)) return minmax_hook(out, opt);
   if (!strcmp("streak", name)) return streak_hook(out, opt);
   if (!strcmp("stretch", name)) return stretch_hook(out, opt);

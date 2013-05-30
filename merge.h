@@ -3,11 +3,6 @@
 #ifndef MERGE_H_
 #define MERGE_H_
 
-#include <jd_pretty.h>
-
-#include "yuv4mpeg2.h"
-
-y4m2_output *merge_hook(y4m2_output *out, jd_var *opt);
 void merge_register(void);
 
 #endif

@@ -11,14 +11,15 @@
 #include "yuv4mpeg2.h"
 
 typedef struct {
-  unsigned frames;
   unsigned phase;
   uint32_t *avg;
+  jd_var config;
 } merge__work;
 
 static void merge__free(merge__work *wrk) {
   if (wrk) {
     y4m2_free(wrk->avg);
+    jd_release(&wrk->config);
     y4m2_free(wrk);
   }
 }
@@ -36,7 +37,7 @@ static void merge__scale(y4m2_frame *frame, uint32_t *avg, unsigned scale) {
 static void *merge__configure(void *ctx, jd_var *config) {
   if (!ctx) ctx = y4m2_alloc(sizeof(merge__work));
   merge__work *wrk = ctx;
-  wrk->frames = util_get_int(jd_rv(config, "$.frames"), 10);
+  jd_assign(&wrk->config, config);
   return ctx;
 }
 
@@ -50,11 +51,12 @@ static void merge__frame(void *ctx, y4m2_output *out,
                          const y4m2_parameters *parms,
                          y4m2_frame *frame) {
   merge__work *wrk = ctx;
+  unsigned frames = util_get_int(jd_rv(&wrk->config, "$.frames"), 10);
   if (!wrk->avg)
     wrk->avg = y4m2_alloc(frame->i.size * sizeof(uint32_t));
   merge__add(wrk->avg, frame);
-  if (++wrk->phase == wrk->frames) {
-    merge__scale(frame, wrk->avg, wrk->frames);
+  if (++wrk->phase == frames) {
+    merge__scale(frame, wrk->avg, frames);
     y4m2_emit_frame(out, parms, frame);
     memset(wrk->avg, 0, frame->i.size * sizeof(uint32_t));
     wrk->phase = 0;

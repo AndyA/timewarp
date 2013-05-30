@@ -7,22 +7,24 @@
 
 #include "yuv4mpeg2.h"
 
-typedef void *(*filter_cb_configure)(void *ctx, jd_var *conf);
-typedef void (*filter_cb_start)(void *ctx, y4m2_output *out,
+typedef struct filter filter;
+
+typedef void (*filter_cb_start)(filter *filt,
                                 const y4m2_parameters *parms);
-typedef void (*filter_cb_frame)(void *ctx, y4m2_output *out,
+typedef void (*filter_cb_frame)(filter *filt,
                                 const y4m2_parameters *parms,
                                 y4m2_frame *frame);
-typedef void (*filter_cb_end)(void *ctx, y4m2_output *out);
+typedef void (*filter_cb_end)(filter *filt);
 
-typedef struct {
-  filter_cb_configure configure;
+struct filter {
   filter_cb_start start;
   filter_cb_frame frame;
   filter_cb_end end;
-  void *ctx;
+
+  jd_var config;
   y4m2_output *out;
-} filter;
+  void *ctx;
+};
 
 void filter_init(void);
 y4m2_output *filter_hook(const char *name, y4m2_output *out, jd_var *opt);

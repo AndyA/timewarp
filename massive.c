@@ -35,7 +35,6 @@ typedef struct {
 } massive__plane;
 
 typedef struct {
-  jd_var config;
   massive__datum *data;
   y4m2_frame *prev;
 } massive__work;
@@ -44,7 +43,6 @@ static void massive__free(massive__work *wrk) {
   if (wrk) {
     y4m2_free(wrk->data);
     y4m2_release_frame(wrk->prev);
-    jd_release(&wrk->config);
     y4m2_free(wrk);
   }
 }
@@ -86,26 +84,18 @@ static void massive__config_parse(massive__plane *pl, jd_var *opt) {
   }
 }
 
-static void *massive__configure(void *ctx, jd_var *config) {
-  if (!ctx) ctx = y4m2_alloc(sizeof(massive__work));
-  massive__work *wrk = ctx;
-  jd_assign(&wrk->config, config);
-  return ctx;
+static void massive__start(filter *filt, const y4m2_parameters *parms) {
+  if (!filt->ctx) filt->ctx = y4m2_alloc(sizeof(massive__work));
+  y4m2_emit_start(filt->out, parms);
 }
 
-static void massive__start(void *ctx, y4m2_output *out,
-                           const y4m2_parameters *parms) {
-  (void) ctx;
-  y4m2_emit_start(out, parms);
-}
-
-static void massive__frame(void *ctx, y4m2_output *out,
+static void massive__frame(filter *filt,
                            const y4m2_parameters *parms,
                            y4m2_frame *frame) {
-  massive__work *wrk = ctx;
+  massive__work *wrk = filt->ctx;
   massive__plane plane[Y4M2_N_PLANE];
   if (!wrk->data) massive__setup(frame, wrk);
-  massive__config_parse(plane, &wrk->config);
+  massive__config_parse(plane, &filt->config);
 
   if (wrk->prev) {
     massive__datum *dp = wrk->data;
@@ -158,24 +148,23 @@ static void massive__frame(void *ctx, y4m2_output *out,
       }
     }
 
-    y4m2_emit_frame(out, parms, wrk->prev);
+    y4m2_emit_frame(filt->out, parms, wrk->prev);
     y4m2_release_frame(wrk->prev);
   }
   else {
-    y4m2_emit_frame(out, parms, frame);
+    y4m2_emit_frame(filt->out, parms, frame);
   }
 
   wrk->prev = y4m2_retain_frame(frame);
 }
 
-static void massive__end(void *ctx, y4m2_output *out) {
-  y4m2_emit_end(out);
-  massive__free(ctx);
+static void massive__end(filter *filt) {
+  y4m2_emit_end(filt->out);
+  massive__free(filt->ctx);
 }
 
 void massive_register(void) {
   filter f = {
-    .configure = massive__configure,
     .start = massive__start,
     .frame = massive__frame,
     .end = massive__end

@@ -35,6 +35,11 @@ void filter_register(const char *name, filter *f) {
                 jd_free);
 }
 
+static void filter__free(filter *f) {
+  jd_release(&f->config);
+  jd_free(f);
+}
+
 static void filter__callback(y4m2_reason reason,
                              const y4m2_parameters *parms,
                              y4m2_frame *frame,
@@ -42,20 +47,20 @@ static void filter__callback(y4m2_reason reason,
   filter *filt = (filter *) ctx;
   switch (reason) {
   case Y4M2_START:
-    filt->start(filt->ctx, filt->out, parms);
+    if (filt->start) filt->start(filt, parms);
     break;
   case Y4M2_FRAME:
-    filt->frame(filt->ctx, filt->out, parms, frame);
+    if (filt->frame) filt->frame(filt, parms, frame);
     break;
   case Y4M2_END:
-    filt->end(filt->ctx, filt->out);
-    jd_free(filt);
+    if (filt->end) filt->end(filt);
+    filter__free(filt);
     break;
   }
 }
 
-static void filter__configure(filter *f, jd_var *opt) {
-  if (f->configure) f->ctx = f->configure(f->ctx, opt);
+static void filter__configure(filter *filt, jd_var *opt) {
+  jd_assign(&filt->config, opt);
 }
 
 y4m2_output *filter_hook(const char *name, y4m2_output *out, jd_var *opt) {

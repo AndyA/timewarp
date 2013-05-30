@@ -12,6 +12,7 @@ bin_PROGRAMS = timewarp
 
 libtimewarp_la_SOURCES = \
 	yuv4mpeg2.h yuv4mpeg2.c \
+	model.h model.c \
 	filter.h filter.c \
 	util.h util.c \
 	average.h average.c \

@@ -59,7 +59,7 @@ static void massive__setup(y4m2_frame *frame,
   for (unsigned p = 0; p < Y4M2_N_PLANE; p++) {
     for (unsigned i = 0; i < frame->i.plane[p].size; i++) {
       dp->position = dp->rms = *fp++;
-      dp->velocity = dp->average =  0;
+      dp->velocity = dp->average = 0;
     }
   }
 }

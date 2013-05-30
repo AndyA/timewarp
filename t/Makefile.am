@@ -1,4 +1,4 @@
-TESTBIN = basic yuv4mpeg2 merge util
+TESTBIN = basic yuv4mpeg2 model massive merge util
 
 TESTPERL = perl.t
 

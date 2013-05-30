@@ -3,7 +3,9 @@
 /*.o
 /basic
 /core
+/massive
 /merge
+/model
 /plotpipe
 /tags
 /util

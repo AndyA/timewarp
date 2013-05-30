@@ -3,11 +3,7 @@
 #ifndef MASSIVE_H_
 #define MASSIVE_H_
 
-#include <jd_pretty.h>
-
-#include "yuv4mpeg2.h"
-
-y4m2_output *massive_hook(y4m2_output *out, jd_var *opt);
+void massive_register(void);
 
 #endif
 

@@ -7,8 +7,6 @@
 #include <jd_pretty.h>
 
 #include "filter.h"
-#include "massive.h"
-#include "minmax.h"
 #include "streak.h"
 #include "stretch.h"
 #include "util.h"
@@ -58,8 +56,6 @@ static void filter__callback(y4m2_reason reason,
 }
 
 y4m2_output *filter__hook(const char *name, y4m2_output *out, jd_var *opt) {
-  if (!strcmp("massive", name)) return massive_hook(out, opt);
-  if (!strcmp("minmax", name)) return minmax_hook(out, opt);
   if (!strcmp("streak", name)) return streak_hook(out, opt);
   if (!strcmp("stretch", name)) return stretch_hook(out, opt);
   if (!strcmp("wobble", name)) return wobble_hook(out, opt);

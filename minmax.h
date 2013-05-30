@@ -3,11 +3,7 @@
 #ifndef MINMAX_H_
 #define MINMAX_H_
 
-#include <jd_pretty.h>
-
-#include "yuv4mpeg2.h"
-
-y4m2_output *minmax_hook(y4m2_output *out, jd_var *opt);
+void minmax_register(void);
 
 #endif
 

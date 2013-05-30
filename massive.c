@@ -6,10 +6,11 @@
 
 #include <jd_pretty.h>
 
-#include "yuv4mpeg2.h"
 #include "average.h"
+#include "filter.h"
 #include "massive.h"
 #include "util.h"
+#include "yuv4mpeg2.h"
 
 #define SHIFT 23
 #define SIGMA 0.00001
@@ -22,30 +23,28 @@ typedef struct {
 } massive__datum;
 
 typedef struct {
-  y4m2_output *out;
+  int disabled;
+  double mass;
+  double drag;
+  double rms_fwd_weight;
+  double rms_inv_weight;
+  double intensity_fwd_mass;
+  double intensity_inv_mass;
+  average average;
+  average rms_acc;
+} massive__plane;
 
-  struct {
-    int disabled;
-    double mass;
-    double drag;
-    double rms_fwd_weight;
-    double rms_inv_weight;
-    double intensity_fwd_mass;
-    double intensity_inv_mass;
-    average average;
-    average rms_acc;
-  } plane[Y4M2_N_PLANE];
-
+typedef struct {
+  jd_var config;
   massive__datum *data;
-
   y4m2_frame *prev;
-
 } massive__work;
 
 static void massive__free(massive__work *wrk) {
   if (wrk) {
     y4m2_free(wrk->data);
     y4m2_release_frame(wrk->prev);
+    jd_release(&wrk->config);
     y4m2_free(wrk);
   }
 }
@@ -53,7 +52,6 @@ static void massive__free(massive__work *wrk) {
 static void massive__setup(y4m2_frame *frame,
                            massive__work *wrk) {
   massive__datum *dp = wrk->data = y4m2_alloc(frame->i.size * sizeof(massive__datum));
-
   uint8_t *fp = frame->buf;
 
   for (unsigned p = 0; p < Y4M2_N_PLANE; p++) {
@@ -64,10 +62,50 @@ static void massive__setup(y4m2_frame *frame,
   }
 }
 
-static void massive__frame(y4m2_frame *frame,
+static const char *plane_key[] = { "Y", "Cb", "Cr" };
+
+static void massive__config_plane(massive__plane *p, jd_var *opt) {
+  p->disabled = util_get_int(jd_rv(opt, "$.disabled"), 0);
+  p->mass = util_get_real(jd_rv(opt, "$.mass"), 1);
+  p->drag = util_get_real(jd_rv(opt, "$.drag"), 0);
+
+  p->rms_fwd_weight = util_get_real(jd_rv(opt, "$.rms_fwd_weight"), 0);
+  p->rms_inv_weight = util_get_real(jd_rv(opt, "$.rms_inv_weight"), 1);
+
+  p->intensity_fwd_mass = util_get_real(jd_rv(opt, "$.intensity_fwd_mass"), 0);
+  p->intensity_inv_mass = util_get_real(jd_rv(opt, "$.intensity_inv_mass"), 0);
+
+  average_config(&p->average, opt, "rms");
+  average_config(&p->rms_acc, opt, "rms");
+}
+
+static void massive__config_parse(massive__plane *pl, jd_var *opt) {
+  for (unsigned p = 0; p < Y4M2_N_PLANE; p++) {
+    jd_var *slot = jd_rv(opt, "$.%s", plane_key[p]);
+    massive__config_plane(pl++, slot);
+  }
+}
+
+static void *massive__configure(void *ctx, jd_var *config) {
+  if (!ctx) ctx = y4m2_alloc(sizeof(massive__work));
+  massive__work *wrk = ctx;
+  jd_assign(&wrk->config, config);
+  return ctx;
+}
+
+static void massive__start(void *ctx, y4m2_output *out,
+                           const y4m2_parameters *parms) {
+  (void) ctx;
+  y4m2_emit_start(out, parms);
+}
+
+static void massive__frame(void *ctx, y4m2_output *out,
                            const y4m2_parameters *parms,
-                           massive__work *wrk) {
+                           y4m2_frame *frame) {
+  massive__work *wrk = ctx;
+  massive__plane plane[Y4M2_N_PLANE];
   if (!wrk->data) massive__setup(frame, wrk);
+  massive__config_parse(plane, &wrk->config);
 
   if (wrk->prev) {
     massive__datum *dp = wrk->data;
@@ -75,15 +113,15 @@ static void massive__frame(y4m2_frame *frame,
     uint8_t *pp = wrk->prev->buf;
 
     for (unsigned p = 0; p < Y4M2_N_PLANE; p++) {
-      if (!wrk->plane[p].disabled) {
+      if (!plane[p].disabled) {
         double min = (p == Y4M2_Y_PLANE) ? 16 : 0;
         double max = (p == Y4M2_Y_PLANE) ? 235 : 255;
-        double drag = wrk->plane[p].drag;
-        double mass = wrk->plane[p].mass;
-        double fwd_weight = wrk->plane[p].rms_fwd_weight;
-        double inv_weight = wrk->plane[p].rms_inv_weight;
-        double fwd_mass = wrk->plane[p].intensity_fwd_mass;
-        double inv_mass = wrk->plane[p].intensity_inv_mass;
+        double drag = plane[p].drag;
+        double mass = plane[p].mass;
+        double fwd_weight = plane[p].rms_fwd_weight;
+        double inv_weight = plane[p].rms_inv_weight;
+        double fwd_mass = plane[p].intensity_fwd_mass;
+        double inv_mass = plane[p].intensity_inv_mass;
 
         int do_rms = fwd_weight != 0 || inv_weight != 1;
 
@@ -93,10 +131,10 @@ static void massive__frame(y4m2_frame *frame,
                               ((255 - *fp) * inv_mass);
 
           if (do_rms) {
-            dp->average = average_next(&wrk->plane[p].average, dp->average, *fp);
+            dp->average = average_next(&plane[p].average, dp->average, *fp);
             double dy = *fp - dp->average;
             double rms = sqrt(dp->rms = average_next(
-                                          &wrk->plane[p].rms_acc, dp->rms, dy * dy));
+                                          &plane[p].rms_acc, dp->rms, dy * dy));
             if (rms < SIGMA) rms = SIGMA;
             local_mass = mass + (fwd_weight * rms) + (inv_weight / rms);
             if (local_mass < SIGMA) local_mass = SIGMA;
@@ -114,63 +152,35 @@ static void massive__frame(y4m2_frame *frame,
         }
 
         if (do_rms) {
-          average_update(&wrk->plane[p].average);
-          average_update(&wrk->plane[p].rms_acc);
+          average_update(&plane[p].average);
+          average_update(&plane[p].rms_acc);
         }
       }
     }
 
-    y4m2_emit_frame(wrk->out, parms, wrk->prev);
+    y4m2_emit_frame(out, parms, wrk->prev);
     y4m2_release_frame(wrk->prev);
   }
   else {
-    y4m2_emit_frame(wrk->out, parms, frame);
+    y4m2_emit_frame(out, parms, frame);
   }
 
   wrk->prev = y4m2_retain_frame(frame);
 }
 
-static void massive__callback(y4m2_reason reason,
-                              const y4m2_parameters *parms,
-                              y4m2_frame *frame,
-                              void *ctx) {
-  massive__work *wrk = (massive__work *) ctx;
-  switch (reason) {
-  case Y4M2_START:
-    y4m2_emit_start(wrk->out, parms);
-    break;
-  case Y4M2_FRAME:
-    massive__frame(frame, parms, wrk);
-    break;
-  case Y4M2_END:
-    y4m2_emit_end(wrk->out);
-    massive__free(wrk);
-    break;
-  }
+static void massive__end(void *ctx, y4m2_output *out) {
+  y4m2_emit_end(out);
+  massive__free(ctx);
 }
 
-static const char *plane_key[] = { "Y", "Cb", "Cr" };
-
-y4m2_output *massive_hook(y4m2_output *out, jd_var *opt) {
-  massive__work *wrk = y4m2_alloc(sizeof(massive__work));
-  wrk->out = out;
-  for (unsigned p = 0; p < Y4M2_N_PLANE; p++) {
-    jd_var *slot = jd_rv(opt, "$.%s", plane_key[p]);
-
-    wrk->plane[p].disabled = util_get_int(jd_rv(slot, "$.disabled"), 0);
-    wrk->plane[p].mass = util_get_real(jd_rv(slot, "$.mass"), 1);
-    wrk->plane[p].drag = util_get_real(jd_rv(slot, "$.drag"), 0);
-
-    wrk->plane[p].rms_fwd_weight = util_get_real(jd_rv(slot, "$.rms_fwd_weight"), 0);
-    wrk->plane[p].rms_inv_weight = util_get_real(jd_rv(slot, "$.rms_inv_weight"), 1);
-
-    wrk->plane[p].intensity_fwd_mass = util_get_real(jd_rv(slot, "$.intensity_fwd_mass"), 0);
-    wrk->plane[p].intensity_inv_mass = util_get_real(jd_rv(slot, "$.intensity_inv_mass"), 0);
-
-    average_config(&wrk->plane[p].average, slot, "rms");
-    average_config(&wrk->plane[p].rms_acc, slot, "rms");
-  }
-  return y4m2_output_next(massive__callback, wrk);
+void massive_register(void) {
+  filter f = {
+    .configure = massive__configure,
+    .start = massive__start,
+    .frame = massive__frame,
+    .end = massive__end
+  };
+  filter_register("massive", &f);
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c

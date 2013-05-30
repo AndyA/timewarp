@@ -1,11 +1,5 @@
 [
    {
-      "filter" : "merge",
-      "options" : {
-         "frames" : 10
-      }
-   },
-   {
       "filter" : "massive",
       "options" : {
          "Cb" : {

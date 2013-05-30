@@ -49,6 +49,8 @@ static void setup(void) {
 
   /* add filters here */
   merge_register();
+  massive_register();
+  minmax_register();
 }
 
 int main(int argc, char *argv[]) {

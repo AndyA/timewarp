@@ -84,6 +84,7 @@ jd_var *model_load(jd_var *stash) {
   jd_var *lm = jd_get_ks(stash, "last_modified", 1);
   if (stat(name, &st)) jd_throw("Can't stat %s: %m", name);
   if (!lm || jd_get_int(lm) < st.st_mtime) {
+    /*    jd_fprintf(stderr, "loading %s\n", name);*/
     model_load_file(jd_get_ks(stash, "model", 1), name);
     jd_set_int(lm, st.st_mtime);
   }
@@ -93,18 +94,20 @@ jd_var *model_load(jd_var *stash) {
 
 jd_var *model_multi_new(jd_var *stash, jd_var *names) {
   size_t nn = jd_count(names);
-  jd_set_array(stash, nn);
+  jd_set_hash(stash, 2);
+  jd_var *slots = jd_set_array(jd_get_ks(stash, "slots", 1), nn);
   for (unsigned i = 0; i < nn; i++) {
-    model_new(jd_push(stash, 1), jd_get_idx(names, i));
+    model_new(jd_push(slots, 1), jd_get_idx(names, i));
   }
   return stash;
 }
 
 jd_var *model_multi_load(jd_var *out, jd_var *stash) {
-  size_t nn = jd_count(stash);
+  jd_var *slots = jd_get_ks(stash, "slots", 0);
+  size_t nn = jd_count(slots);
   jd_set_array(out, nn * 2);
   for (unsigned i = 0; i < nn; i++)
-    jd_append(out, model_load(jd_get_idx(stash, i)));
+    jd_append(out, model_load(jd_get_idx(slots, i)));
   return out;
 }
 

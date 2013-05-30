@@ -31,7 +31,7 @@ static void stretch__start(filter *filt, const y4m2_parameters *parms) {
 
 static void stretch__frame(filter *filt, const y4m2_parameters *parms, y4m2_frame *frame) {
   stretch__work *wrk = filt->ctx;
-  unsigned frames = model_get_int(&filt->config, 10, "$.frames");
+  unsigned frames = model_get_int(&filt->config, 10, "$.options.frames");
 
   if (wrk->prev) {
     if (!wrk->tmp) wrk->tmp = y4m2_like_frame(frame);
@@ -47,6 +47,7 @@ static void stretch__frame(filter *filt, const y4m2_parameters *parms, y4m2_fram
 
       for (unsigned i = 0; i < frame->i.size; i++)
         *tp++ = (*pp++ * pw + *fp++ * fw) / tw;
+      wrk->tmp->sequence = frame->sequence;
       y4m2_emit_frame(filt->out, parms, wrk->tmp);
     }
 

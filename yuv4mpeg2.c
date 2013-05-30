@@ -220,6 +220,7 @@ int y4m2_parse(FILE *in, y4m2_output *out) {
   size_t buf_size = 0;
   char *buf = NULL;
   y4m2_parameters *global = NULL;
+  uint64_t sequence = 0;
 
   for (;;) {
     int c = getc(in);
@@ -257,6 +258,7 @@ int y4m2_parse(FILE *in, y4m2_output *out) {
       y4m2_merge_parms(merged, parms);
 
       y4m2_frame *frame = y4m2_new_frame(merged);
+      frame->sequence = sequence++;
       size_t got = fread(frame->buf, 1, frame->i.size, in);
       if (got != frame->i.size) {
         fprintf(stderr, "Short read");

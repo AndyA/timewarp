@@ -27,8 +27,8 @@ static void minmax__start(filter *filt, const y4m2_parameters *parms) {
 
 static void minmax__frame(filter *filt, const y4m2_parameters *parms, y4m2_frame *frame) {
   minmax__work *wrk = filt->ctx;
-  unsigned frames = model_get_int(&filt->config, 10, "$.frames");
-  unsigned min = model_get_int(&filt->config, 0, "$.min");
+  unsigned frames = model_get_int(&filt->config, 10, "$.options.frames");
+  unsigned min = model_get_int(&filt->config, 0, "$.options.min");
 
   if (wrk->acc) {
     if (min) {
@@ -49,6 +49,7 @@ static void minmax__frame(filter *filt, const y4m2_parameters *parms, y4m2_frame
   }
 
   if (++wrk->phase == frames) {
+    wrk->acc->sequence = frame->sequence;
     y4m2_emit_frame(filt->out, parms, wrk->acc);
     y4m2_release_frame(wrk->acc);
     wrk->acc = NULL;

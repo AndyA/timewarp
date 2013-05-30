@@ -33,7 +33,7 @@ static void streak__start(filter *filt, const y4m2_parameters *parms) {
 
 static void streak__frame(filter *filt, const y4m2_parameters *parms, y4m2_frame *frame) {
   streak__work *wrk = filt->ctx;
-  double decay = model_get_real(&filt->config, 0, "$.decay");
+  double decay = model_get_real(&filt->config, 0, "$.options.decay");
 
   if (!wrk->acc) wrk->acc = y4m2_alloc(frame->i.size * sizeof(double));
 

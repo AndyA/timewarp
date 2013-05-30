@@ -78,7 +78,7 @@ static void massive__config_plane(massive__plane *p, jd_var *opt) {
 
 static void massive__config_parse(massive__plane *pl, jd_var *opt) {
   for (unsigned p = 0; p < Y4M2_N_PLANE; p++) {
-    jd_var *slot = jd_rv(opt, "$.%s", plane_key[p]);
+    jd_var *slot = jd_rv(opt, "$.options.%s", plane_key[p]);
     massive__config_plane(pl++, slot);
   }
 }
@@ -145,6 +145,7 @@ static void massive__frame(filter *filt, const y4m2_parameters *parms, y4m2_fram
       }
     }
 
+    wrk->prev->sequence = frame->sequence;
     y4m2_emit_frame(filt->out, parms, wrk->prev);
     y4m2_release_frame(wrk->prev);
   }

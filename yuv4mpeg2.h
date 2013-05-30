@@ -31,6 +31,7 @@ typedef struct {
   y4m2_frame_info i;
   uint8_t *buf;
   uint8_t *plane[Y4M2_N_PLANE];
+  uint64_t sequence;
 } y4m2_frame;
 
 typedef enum { Y4M2_START, Y4M2_FRAME, Y4M2_END } y4m2_reason;

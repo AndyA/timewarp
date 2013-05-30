@@ -39,7 +39,7 @@ static void merge__start(filter *filt, const y4m2_parameters *parms) {
 
 static void merge__frame(filter *filt, const y4m2_parameters *parms, y4m2_frame *frame) {
   merge__work *wrk = filt->ctx;
-  unsigned frames = model_get_int(&filt->config, 10, "$.frames");
+  unsigned frames = model_get_int(&filt->config, 10, "$.options.frames");
   if (!wrk->avg)
     wrk->avg = y4m2_alloc(frame->i.size * sizeof(uint32_t));
   merge__add(wrk->avg, frame);

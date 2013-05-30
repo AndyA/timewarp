@@ -23,9 +23,10 @@ void filter_init(void) {
   atexit(filter__teardown);
 }
 
-static filter *filter__clone(const filter *f) {
+static filter *filter__clone(filter *f) {
   filter *nf = jd_alloc(sizeof(filter));
   *nf = *f;
+  jd_assign(&nf->config, &f->config);
   return nf;
 }
 
@@ -61,7 +62,7 @@ static void filter__configure(filter *filt, jd_var *opt) {
   jd_assign(&filt->config, opt);
 }
 
-y4m2_output *filter_hook(const char *name, y4m2_output *out, jd_var *opt) {
+static y4m2_output *filter__hook(const char *name, y4m2_output *out, jd_var *opt) {
   jd_var *fp = jd_get_ks(&filters, name, 0);
   if (!fp) jd_throw("Unknown filter \"%s\"", name);
 
@@ -78,7 +79,7 @@ y4m2_output *filter_build(y4m2_output *out, jd_var *config) {
   for (int i = jd_count(config); --i >= 0;) {
     jd_var *filt = jd_get_idx(config, i);
     if (model_get_int(filt, 0, "$.disabled")) continue;
-    last_out = filter_hook(jd_bytes(jd_rv(filt, "$.filter"), NULL),
+    last_out = filter__hook(jd_bytes(jd_rv(filt, "$.filter"), NULL),
                            last_out, jd_rv(filt, "$.options"));
   }
 

@@ -1,0 +1,14 @@
+[
+   {
+      "filter" : "merge",
+      "options" : {
+         "frames" : 10
+      }
+   },
+   {
+      "filter" : "streak",
+      "options" : {
+         "decay" : 0.9
+      }
+   }
+]

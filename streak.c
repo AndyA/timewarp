@@ -7,7 +7,7 @@
 #include <jd_pretty.h>
 
 #include "filter.h"
-#include "util.h"
+#include "model.h"
 #include "streak.h"
 #include "yuv4mpeg2.h"
 
@@ -31,11 +31,9 @@ static void streak__start(filter *filt, const y4m2_parameters *parms) {
   y4m2_emit_start(filt->out, parms);
 }
 
-static void streak__frame(filter *filt,
-                          const y4m2_parameters *parms,
-                          y4m2_frame *frame) {
+static void streak__frame(filter *filt, const y4m2_parameters *parms, y4m2_frame *frame) {
   streak__work *wrk = filt->ctx;
-  double decay = util_get_real(jd_rv(&filt->config, "$.decay"), 10);
+  double decay = model_get_real(&filt->config, 0, "$.decay");
 
   if (!wrk->acc) wrk->acc = y4m2_alloc(frame->i.size * sizeof(double));
 

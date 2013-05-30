@@ -7,8 +7,7 @@
 #include "yuv4mpeg2.h"
 
 static const char *tag[] = {
-  "YUV4MPEG2",
-  "FRAME"
+  "YUV4MPEG2", "FRAME"
 };
 
 void *y4m2_alloc(size_t size) {
@@ -94,10 +93,7 @@ static unsigned parse_num(const char *s) {
   exit(1);
 }
 
-static void set_planes(y4m2_frame_info *info,
-                       unsigned xsY, unsigned ysY,
-                       unsigned xsCb, unsigned ysCb,
-                       unsigned xsCr, unsigned ysCr) {
+static void set_planes(y4m2_frame_info *info, unsigned xsY, unsigned ysY, unsigned xsCb, unsigned ysCb, unsigned xsCr, unsigned ysCr) {
   size_t pix_size = info->width * info->height;
 
   info->plane[Y4M2_Y_PLANE].xs = xsY;
@@ -208,7 +204,7 @@ void y4m2__parse_parms(y4m2_parameters *parms, char *buf) {
     while (*buf > ' ') buf++;
     char t = *buf;
     *buf = '\0';
-    /*    fprintf(stderr, "%s=%s\n", name, vp);*/
+    /*    fprintf(stderr,"%s=%s\n",name,vp);*/
     y4m2_set_parm(parms, name, vp);
     *buf = t;
   }

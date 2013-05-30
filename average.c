@@ -3,7 +3,7 @@
 #include <jd_pretty.h>
 
 #include "average.h"
-#include "util.h"
+#include "model.h"
 
 void average_init(average *avg, double decay, double ow, double nw) {
   avg->decay = decay;
@@ -16,9 +16,9 @@ void average_init(average *avg, double decay, double ow, double nw) {
 
 void average_config(average *avg, jd_var *v, const char *ns) {
   average_init(avg,
-               util_get_real(jd_rv(v, "$.%s_decay", ns), 0),
-               util_get_real(jd_rv(v, "$.%s_ow", ns), 1),
-               util_get_real(jd_rv(v, "$.%s_nw", ns), 1));
+               model_get_real(v, 0, "$.%s_decay", ns),
+               model_get_real(v, 1, "$.%s_ow", ns),
+               model_get_real(v, 1, "$.%s_nw", ns));
 }
 
 void average_update(average *avg) {

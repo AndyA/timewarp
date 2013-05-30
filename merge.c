@@ -7,7 +7,7 @@
 
 #include "filter.h"
 #include "merge.h"
-#include "util.h"
+#include "model.h"
 #include "yuv4mpeg2.h"
 
 typedef struct {
@@ -37,11 +37,9 @@ static void merge__start(filter *filt, const y4m2_parameters *parms) {
   y4m2_emit_start(filt->out, parms);
 }
 
-static void merge__frame(filter *filt,
-                         const y4m2_parameters *parms,
-                         y4m2_frame *frame) {
+static void merge__frame(filter *filt, const y4m2_parameters *parms, y4m2_frame *frame) {
   merge__work *wrk = filt->ctx;
-  unsigned frames = util_get_int(jd_rv(&filt->config, "$.frames"), 10);
+  unsigned frames = model_get_int(&filt->config, 10, "$.frames");
   if (!wrk->avg)
     wrk->avg = y4m2_alloc(frame->i.size * sizeof(uint32_t));
   merge__add(wrk->avg, frame);

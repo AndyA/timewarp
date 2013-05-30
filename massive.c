@@ -9,7 +9,7 @@
 #include "average.h"
 #include "filter.h"
 #include "massive.h"
-#include "util.h"
+#include "model.h"
 #include "yuv4mpeg2.h"
 
 #define SHIFT 23
@@ -47,8 +47,7 @@ static void massive__free(massive__work *wrk) {
   }
 }
 
-static void massive__setup(y4m2_frame *frame,
-                           massive__work *wrk) {
+static void massive__setup(y4m2_frame *frame, massive__work *wrk) {
   massive__datum *dp = wrk->data = y4m2_alloc(frame->i.size * sizeof(massive__datum));
   uint8_t *fp = frame->buf;
 
@@ -63,15 +62,15 @@ static void massive__setup(y4m2_frame *frame,
 static const char *plane_key[] = { "Y", "Cb", "Cr" };
 
 static void massive__config_plane(massive__plane *p, jd_var *opt) {
-  p->disabled = util_get_int(jd_rv(opt, "$.disabled"), 0);
-  p->mass = util_get_real(jd_rv(opt, "$.mass"), 1);
-  p->drag = util_get_real(jd_rv(opt, "$.drag"), 0);
+  p->disabled = model_get_int(opt, 0, "$.disabled");
+  p->mass = model_get_real(opt, 1, "$.mass");
+  p->drag = model_get_real(opt, 0, "$.drag");
 
-  p->rms_fwd_weight = util_get_real(jd_rv(opt, "$.rms_fwd_weight"), 0);
-  p->rms_inv_weight = util_get_real(jd_rv(opt, "$.rms_inv_weight"), 1);
+  p->rms_fwd_weight = model_get_real(opt, 0, "$.rms_fwd_weight");
+  p->rms_inv_weight = model_get_real(opt, 1, "$.rms_inv_weight");
 
-  p->intensity_fwd_mass = util_get_real(jd_rv(opt, "$.intensity_fwd_mass"), 0);
-  p->intensity_inv_mass = util_get_real(jd_rv(opt, "$.intensity_inv_mass"), 0);
+  p->intensity_fwd_mass = model_get_real(opt, 0, "$.intensity_fwd_mass");
+  p->intensity_inv_mass = model_get_real(opt, 0, "$.intensity_inv_mass");
 
   average_config(&p->average, opt, "rms");
   average_config(&p->rms_acc, opt, "rms");
@@ -89,9 +88,7 @@ static void massive__start(filter *filt, const y4m2_parameters *parms) {
   y4m2_emit_start(filt->out, parms);
 }
 
-static void massive__frame(filter *filt,
-                           const y4m2_parameters *parms,
-                           y4m2_frame *frame) {
+static void massive__frame(filter *filt, const y4m2_parameters *parms, y4m2_frame *frame) {
   massive__work *wrk = filt->ctx;
   massive__plane plane[Y4M2_N_PLANE];
   if (!wrk->data) massive__setup(frame, wrk);

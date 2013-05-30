@@ -9,7 +9,7 @@
 #include "average.h"
 #include "filter.h"
 #include "stretch.h"
-#include "util.h"
+#include "model.h"
 #include "yuv4mpeg2.h"
 
 typedef struct {
@@ -29,11 +29,9 @@ static void stretch__start(filter *filt, const y4m2_parameters *parms) {
   y4m2_emit_start(filt->out, parms);
 }
 
-static void stretch__frame(filter *filt,
-                          const y4m2_parameters *parms,
-                          y4m2_frame *frame) {
+static void stretch__frame(filter *filt, const y4m2_parameters *parms, y4m2_frame *frame) {
   stretch__work *wrk = filt->ctx;
-  unsigned frames = util_get_int(jd_rv(&filt->config, "$.frames"), 10);
+  unsigned frames = model_get_int(&filt->config, 10, "$.frames");
 
   if (wrk->prev) {
     if (!wrk->tmp) wrk->tmp = y4m2_like_frame(frame);

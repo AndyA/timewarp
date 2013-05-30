@@ -9,7 +9,7 @@
 #include "filter.h"
 #include "streak.h"
 #include "stretch.h"
-#include "util.h"
+#include "model.h"
 #include "yuv4mpeg2.h"
 
 static jd_var filters = JD_INIT;
@@ -30,9 +30,7 @@ static filter *filter__clone(const filter *f) {
 }
 
 void filter_register(const char *name, filter *f) {
-  jd_set_object(jd_get_ks(&filters, name, 1),
-                filter__clone(f),
-                jd_free);
+  jd_set_object(jd_get_ks(&filters, name, 1), filter__clone(f), jd_free);
 }
 
 static void filter__free(filter *filt) {
@@ -79,7 +77,7 @@ y4m2_output *filter_build(y4m2_output *out, jd_var *config) {
 
   for (int i = jd_count(config); --i >= 0;) {
     jd_var *filt = jd_get_idx(config, i);
-    if (util_get_int(jd_rv(filt, "$.disabled"), 0)) continue;
+    if (model_get_int(filt, 0, "$.disabled")) continue;
     last_out = filter_hook(jd_bytes(jd_rv(filt, "$.filter"), NULL),
                            last_out, jd_rv(filt, "$.options"));
   }

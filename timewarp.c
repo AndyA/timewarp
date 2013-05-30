@@ -10,9 +10,9 @@
 #include "massive.h"
 #include "merge.h"
 #include "minmax.h"
+#include "model.h"
 #include "streak.h"
 #include "stretch.h"
-#include "util.h"
 #include "yuv4mpeg2.h"
 
 static jd_var *load_string(jd_var *out, FILE *f) {

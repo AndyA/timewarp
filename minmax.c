@@ -5,7 +5,7 @@
 
 #include "filter.h"
 #include "minmax.h"
-#include "util.h"
+#include "model.h"
 #include "yuv4mpeg2.h"
 
 typedef struct {
@@ -25,12 +25,10 @@ static void minmax__start(filter *filt, const y4m2_parameters *parms) {
   y4m2_emit_start(filt->out, parms);
 }
 
-static void minmax__frame(filter *filt,
-                          const y4m2_parameters *parms,
-                          y4m2_frame *frame) {
+static void minmax__frame(filter *filt, const y4m2_parameters *parms, y4m2_frame *frame) {
   minmax__work *wrk = filt->ctx;
-  unsigned frames = util_get_int(jd_rv(&filt->config, "$.frames"), 10);
-  unsigned min = util_get_int(jd_rv(&filt->config, "$.min"), 0);
+  unsigned frames = model_get_int(&filt->config, 10, "$.frames");
+  unsigned min = model_get_int(&filt->config, 0, "$.min");
 
   if (wrk->acc) {
     if (min) {

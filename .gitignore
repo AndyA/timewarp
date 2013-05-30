@@ -18,9 +18,13 @@
 /*.d
 /*.deb
 /*.gz
+/*.h264
+/*.mov
+/*.mp4
 /*.o
 /*.rpm
 /*.ts
+/*.yuv
 /.build/
 /Session.vim
 /TAGS

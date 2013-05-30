@@ -49,10 +49,10 @@ double model_get_real(jd_var *v, double fallback, const char *path, ...) {
 }
 
 jd_var *model_load_string(jd_var *out, FILE *f) {
-  char buf[512];
+  char buf[0x10000];
   size_t got;
 
-  jd_set_empty_string(out, 10000);
+  jd_set_empty_string(out, 1);
   while (got = fread(buf, 1, sizeof(buf), f), got)
     jd_append_bytes(out, buf, got);
   return out;

@@ -73,7 +73,8 @@ int main(int argc, char *argv[]) {
     }
 
     y4m2_output *out = fh_get_output(&capture);
-    y4m2_output *filt_out = filter_build(out, config);
+    abort(); // doesn't work currently
+    y4m2_output *filt_out = filter_build(jd_nv(), out, config);
 
     while (lp = read_line(line, stdin), lp) {
       while (jd_count(lp) < 3) jd_set_int(jd_push(lp, 1), 0);

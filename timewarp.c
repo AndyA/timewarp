@@ -40,9 +40,10 @@ int main(int argc, char *argv[]) {
   scope {
     setup();
     jd_var *model = build_model(jd_nv(), argc - 1, argv + 1);
+    jd_var *filters = jd_nv();
 
     y4m2_output *out = y4m2_output_file(stdout);
-    y4m2_output *filt_out = filter_build(out, model);
+    y4m2_output *filt_out = filter_build(filters, out, model);
 
     y4m2_parse(stdin, filt_out);
     y4m2_free_output(out);

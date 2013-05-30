@@ -73,16 +73,18 @@ static y4m2_output *filter__hook(const char *name, y4m2_output *out, jd_var *opt
   return y4m2_output_next(filter__callback, f);
 }
 
-y4m2_output *filter_build(y4m2_output *out, jd_var *config) {
+y4m2_output *filter_build(y4m2_output *out, jd_var *model) {
   y4m2_output *last_out = out;
+  scope {
+    jd_var *config = model_multi_load(jd_nv(), model);
 
-  for (int i = jd_count(config); --i >= 0;) {
-    jd_var *filt = jd_get_idx(config, i);
-    if (model_get_int(filt, 0, "$.disabled")) continue;
-    last_out = filter__hook(jd_bytes(jd_rv(filt, "$.filter"), NULL),
-                           last_out, jd_rv(filt, "$.options"));
+    for (int i = jd_count(config); --i >= 0;) {
+      jd_var *filt = jd_get_idx(config, i);
+      if (model_get_int(filt, 0, "$.disabled")) continue;
+      last_out = filter__hook(jd_bytes(jd_rv(filt, "$.filter"), NULL),
+      last_out, jd_rv(filt, "$.options"));
+    }
   }
-
   return last_out;
 }
 

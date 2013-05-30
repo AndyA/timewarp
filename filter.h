@@ -28,7 +28,7 @@ struct filter {
 
 void filter_init(void);
 void filter_register(const char *name, filter *f);
-y4m2_output *filter_build(y4m2_output *out, jd_var *config);
+y4m2_output *filter_build(y4m2_output *out, jd_var *model);
 
 #endif
 

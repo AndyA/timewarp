@@ -5,7 +5,7 @@
 #include "util.h"
 
 jd_int util_get_int(jd_var *v, jd_int fallback) {
-  return v ? jd_get_real(v) : fallback;
+  return v ? jd_get_int(v) : fallback;
 }
 
 double util_get_real(jd_var *v, double fallback) {

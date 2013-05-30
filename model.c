@@ -73,8 +73,8 @@ jd_var *model_load_file(jd_var *out, const char *fn) {
   return v;
 }
 
-jd_var *model_new(jd_var *stash, const char *name) {
-  scope jd_set_hash_with(stash, jd_nsv("name"), jd_nsv(name), NULL);
+jd_var *model_new(jd_var *stash, jd_var *name) {
+  scope jd_set_hash_with(stash, jd_nsv("name"), name, NULL);
   return stash;
 }
 
@@ -89,6 +89,23 @@ jd_var *model_load(jd_var *stash) {
   }
 
   return jd_get_ks(stash, "model", 0);
+}
+
+jd_var *model_multi_new(jd_var *stash, jd_var *names) {
+  size_t nn = jd_count(names);
+  jd_set_array(stash, nn);
+  for (unsigned i = 0; i < nn; i++) {
+    model_new(jd_push(stash, 1), jd_get_idx(names, i));
+  }
+  return stash;
+}
+
+jd_var *model_multi_load(jd_var *out, jd_var *stash) {
+  size_t nn = jd_count(stash);
+  jd_set_array(out, nn * 2);
+  for (unsigned i = 0; i < nn; i++)
+    jd_append(out, model_load(jd_get_idx(stash, i)));
+  return out;
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c

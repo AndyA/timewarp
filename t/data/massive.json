@@ -1,0 +1,34 @@
+[
+   {
+      "filter" : "merge",
+      "options" : {
+         "frames" : 10
+      }
+   },
+   {
+      "filter" : "massive",
+      "options" : {
+         "Cb" : {
+            "disabled" : false,
+            "drag" : 0.05,
+            "mass" : 2.3,
+            "rms_decay" : 0.999,
+            "rms_inv_weight" : 100
+         },
+         "Cr" : {
+            "disabled" : false,
+            "drag" : 0.04,
+            "mass" : 3.2,
+            "rms_decay" : 0.999,
+            "rms_inv_weight" : 100
+         },
+         "Y" : {
+            "disabled" : false,
+            "drag" : 0.03,
+            "mass" : 1,
+            "rms_decay" : 0.9999,
+            "rms_inv_weight" : 100
+         }
+      }
+   }
+]

@@ -78,7 +78,7 @@ static y4m2_output *filter__hook(jd_var *stash, const char *name, y4m2_output *o
   filter *filt = filter__clone(jd_ptr(fp));
   filt->ctx = NULL;
   filt->out = out;
-  jd_set_object(jd_push(stash, 1), filt, filter__free_cb);
+  jd_set_object(jd_unshift(stash, 1), filt, filter__free_cb);
   return y4m2_output_next(filter__callback, filt);
 }
 

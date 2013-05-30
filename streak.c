@@ -6,63 +6,72 @@
 
 #include <jd_pretty.h>
 
+#include "filter.h"
+#include "util.h"
 #include "streak.h"
 #include "yuv4mpeg2.h"
 
 #define SHIFT 23
 
 typedef struct {
-  y4m2_output *out;
   double *acc;
   double decay;
   double scale;
+  jd_var config;
 } streak__work;
 
 static void streak__free(streak__work *wrk) {
   if (wrk) {
     y4m2_free(wrk->acc);
+    jd_release(&wrk->config);
     y4m2_free(wrk);
   }
 }
 
-static void streak__frame(y4m2_frame *frame, const y4m2_parameters *parms, streak__work *wrk) {
+static void *streak__configure(void *ctx, jd_var *config) {
+  if (!ctx) ctx = y4m2_alloc(sizeof(streak__work));
+  streak__work *wrk = ctx;
+  jd_assign(&wrk->config, config);
+  return ctx;
+}
+
+static void streak__start(void *ctx, y4m2_output *out,
+                          const y4m2_parameters *parms) {
+  (void) ctx;
+  y4m2_emit_start(out, parms);
+}
+
+static void streak__frame(void *ctx, y4m2_output *out,
+                          const y4m2_parameters *parms,
+                          y4m2_frame *frame) {
+  streak__work *wrk = ctx;
+  double decay = util_get_real(jd_rv(&wrk->config, "$.decay"), 10);
+
   if (!wrk->acc) wrk->acc = y4m2_alloc(frame->i.size * sizeof(double));
 
   for (unsigned i = 0; i < frame->i.size; i++) {
-    wrk->acc[i] = wrk->acc[i] * wrk->decay + frame->buf[i];
+    wrk->acc[i] = wrk->acc[i] * decay + frame->buf[i];
     frame->buf[i] = (uint8_t)(wrk->acc[i] / wrk->scale);
   }
 
-  wrk->scale = wrk->scale * wrk->decay + 1;
+  wrk->scale = wrk->scale * decay + 1;
 
-  y4m2_emit_frame(wrk->out, parms, frame);
+  y4m2_emit_frame(out, parms, frame);
 }
 
-static void streak__callback(y4m2_reason reason,
-                             const y4m2_parameters *parms,
-                             y4m2_frame *frame,
-                             void *ctx) {
-  streak__work *wrk = (streak__work *) ctx;
-  switch (reason) {
-  case Y4M2_START:
-    y4m2_emit_start(wrk->out, parms);
-    break;
-  case Y4M2_FRAME:
-    streak__frame(frame, parms, wrk);
-    break;
-  case Y4M2_END:
-    y4m2_emit_end(wrk->out);
-    streak__free(wrk);
-    break;
-  }
+static void streak__end(void *ctx, y4m2_output *out) {
+  y4m2_emit_end(out);
+  streak__free(ctx);
 }
 
-y4m2_output *streak_hook(y4m2_output *out, jd_var *opt) {
-  streak__work *wrk = y4m2_alloc(sizeof(streak__work));
-  wrk->out = out;
-  wrk->decay = jd_get_real(jd_rv(opt, "$.decay"));
-  wrk->scale = 1;
-  return y4m2_output_next(streak__callback, wrk);
+void streak_register(void) {
+  filter f = {
+    .configure = streak__configure,
+    .start = streak__start,
+    .frame = streak__frame,
+    .end = streak__end
+  };
+  filter_register("streak", &f);
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c

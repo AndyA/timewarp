@@ -3,11 +3,7 @@
 #ifndef STREAK_H_
 #define STREAK_H_
 
-#include <jd_pretty.h>
-
-#include "yuv4mpeg2.h"
-
-y4m2_output *streak_hook(y4m2_output *out, jd_var *opt);
+void streak_register(void);
 
 #endif
 

@@ -51,6 +51,7 @@ static void setup(void) {
   merge_register();
   massive_register();
   minmax_register();
+  streak_register();
 }
 
 int main(int argc, char *argv[]) {

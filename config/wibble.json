@@ -4,23 +4,25 @@
       "filter" : "massive",
       "options" : {
          "Cb" : {
-            "disabled" : false,
+            "disabled" : true,
             "drag" : 0.05,
             "mass" : 4.2,
             "rms_decay" : 0.999
          },
          "Cr" : {
-            "disabled" : false,
+            "disabled" : true,
             "drag" : 0.04,
             "mass" : 3.5,
             "rms_decay" : 0.999
          },
          "Y" : {
+            "attraction" : 0.6,
             "disabled" : false,
-            "drag" : 1,
+            "drag" : 0.004,
             "intensity_fwd_mass" : 0,
             "intensity_inv_mass" : 0,
-            "mass" : 1
+            "mass" : 6,
+            "mix" : 1
          }
       }
    },
@@ -28,7 +30,7 @@
       "disabled" : true,
       "filter" : "streak",
       "options" : {
-         "decay" : 0.4
+         "decay" : 0.9
       }
    }
 ]

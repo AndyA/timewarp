@@ -1,6 +1,6 @@
 [
    {
-      "disabled" : false,
+      "disabled" : true,
       "filter" : "massive",
       "options" : {
          "Cb" : {
@@ -31,6 +31,24 @@
       "filter" : "streak",
       "options" : {
          "decay" : 0.9
+      }
+   },
+   {
+      "disabled" : false,
+      "filter" : "peak",
+      "options" : {
+         "Cb" : {
+            "decay" : 0.99,
+            "disabled" : false
+         },
+         "Cr" : {
+            "decay" : 0.99,
+            "disabled" : false
+         },
+         "Y" : {
+            "decay" : 0.99,
+            "disabled" : false
+         }
       }
    }
 ]

@@ -17,6 +17,7 @@ libtimewarp_la_SOURCES = \
 	filter.h filter.c \
 	average.h average.c \
 	merge.h merge.c \
+	peak.h peak.c \
 	minmax.h minmax.c \
 	streak.h streak.c \
 	stretch.h stretch.c \

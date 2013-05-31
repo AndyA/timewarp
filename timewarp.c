@@ -11,6 +11,7 @@
 #include "merge.h"
 #include "minmax.h"
 #include "model.h"
+#include "peak.h"
 #include "streak.h"
 #include "stretch.h"
 #include "yuv4mpeg2.h"
@@ -19,9 +20,10 @@ static void setup(void) {
   filter_init();
 
   /* add filters here */
-  merge_register();
   massive_register();
+  merge_register();
   minmax_register();
+  peak_register();
   streak_register();
   stretch_register();
 }

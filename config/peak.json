@@ -1,0 +1,20 @@
+[
+   {
+      "disabled" : false,
+      "filter" : "peak",
+      "options" : {
+         "Cb" : {
+            "decay" : 0.99,
+            "disabled" : false
+         },
+         "Cr" : {
+            "decay" : 0.99,
+            "disabled" : false
+         },
+         "Y" : {
+            "decay" : 0.99,
+            "disabled" : false
+         }
+      }
+   }
+]

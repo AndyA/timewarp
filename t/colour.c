@@ -8,7 +8,7 @@
 #include "colour.h"
 
 #define SIGMA_F 0.1
-#define SIGMA_B 4
+#define SIGMA_B 7
 
 #define countof(x) (sizeof(x) / sizeof((x)[0]))
 
@@ -89,6 +89,38 @@ static void test_floats_yuv2rgb(void) {
                    colour_f_yuv2rgb, colour_f_rgb2yuv);
 }
 
+static void test_floats_rgb2hsv(void) {
+  static colour_floats rgb2hsv[] = {
+    {{ 0, 0, 0, 0 }},
+    {{ 128, 128, 128, 0 }},
+    {{ 255, 255, 255, 0 }},
+    {{ 0, 128, 255, 0 }},
+    {{ 255, 0, 128, 0 }},
+    {{ 128, 255, 0, 0 }}
+  };
+
+  roundtrip_floats("rgb2hsv, hsv2rgb, float",
+                   rgb2hsv, countof(rgb2hsv),
+                   colour_f_rgb2hsv, colour_f_hsv2rgb);
+}
+
+static void test_floats_hsv2rgb(void) {
+  static colour_floats hsv2rgb[] = {
+    {{ 20, 20, 20, 20 }},
+    {{ 128, 128, 128, 20 }},
+    {{ 235, 235, 235, 20 }},
+    {{ 20, 128, 235, 20 }},
+    {{ 235, 20, 128, 20 }},
+    {{ 128, 235, 20, 20 }}
+  };
+
+  roundtrip_floats("hsv2rgb, rgb2hsv, float",
+                   hsv2rgb, countof(hsv2rgb),
+                   colour_f_hsv2rgb, colour_f_rgb2hsv);
+}
+
+
+
 static void test_bytes_rgb2yuv(void) {
   static colour_bytes rgb2yuv[] = {
     {{ 0, 0, 0, 0 }},
@@ -119,11 +151,47 @@ static void test_bytes_yuv2rgb(void) {
                   colour_b_yuv2rgb, colour_b_rgb2yuv);
 }
 
+static void test_bytes_rgb2hsv(void) {
+  static colour_bytes rgb2hsv[] = {
+    {{ 0, 0, 0, 0 }},
+    {{ 128, 128, 128, 0 }},
+    {{ 255, 255, 255, 0 }},
+    {{ 0, 128, 255, 0 }},
+    {{ 255, 0, 128, 0 }},
+    {{ 128, 255, 0, 0 }}
+  };
+
+  roundtrip_bytes("rgb2hsv, hsv2rgb, byte",
+                  rgb2hsv, countof(rgb2hsv),
+                  colour_b_rgb2hsv, colour_b_hsv2rgb);
+}
+
+static void test_bytes_hsv2rgb(void) {
+  static colour_bytes hsv2rgb[] = {
+    {{ 20, 20, 20, 20 }},
+    {{ 128, 128, 128, 20 }},
+    {{ 235, 235, 235, 20 }},
+    {{ 20, 128, 235, 20 }},
+    {{ 235, 20, 128, 20 }},
+    {{ 128, 235, 20, 20 }}
+  };
+
+  roundtrip_bytes("hsv2rgb, rgb2hsv, byte",
+                  hsv2rgb, countof(hsv2rgb),
+                  colour_b_hsv2rgb, colour_b_rgb2hsv);
+}
+
+
 void test_main(void) {
   test_floats_rgb2yuv();
   test_floats_yuv2rgb();
+  test_floats_rgb2hsv();
+  test_floats_hsv2rgb();
+
   test_bytes_rgb2yuv();
   test_bytes_yuv2rgb();
+  test_bytes_rgb2hsv();
+  test_bytes_hsv2rgb();
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c

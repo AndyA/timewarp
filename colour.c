@@ -4,8 +4,13 @@
 
 #include "colour.h"
 
-#define SCF(x, s) ((x) * (s) / 256.0)
-#define SCB(x, s) ((int32_t) (x) * (int32_t) ((s) * 256) / 65536)
+#define MIN2(a, b)    ((a) < (b) ? (a) : (b))
+#define MAX2(a, b)    ((a) > (b) ? (a) : (b))
+#define MIN3(a, b, c) MIN2(MIN2(a, b), c)
+#define MAX3(a, b, c) MAX2(MAX2(a, b), c)
+
+#define SCF(x, s)     ((x) * (s) / 256.0)
+#define SCB(x, s)     ((int32_t) (x) * (int32_t) ((s) * 256) / 65536)
 
 static int32_t clamp_b(int32_t x, int32_t min, int32_t max) {
   if (x < min) return min;
@@ -93,6 +98,84 @@ void colour_b_yuv2rgb(const colour_bytes *in, colour_bytes *out) {
                        276.836, 0, 255);
 
   out->c[cA] = in->c[cA];
+}
+
+void colour_f_rgb2hsv(const colour_floats *in, colour_floats *out) {
+  double min = MIN3(in->c[0], in->c[1], in->c[2]);
+  double max = MAX3(in->c[0], in->c[1], in->c[2]);
+  double d = max - min;
+  out->c[cV] = max;
+  out->c[cS] = (max == 0 ? 0 : d / max) * 255;
+
+  double h = (0 == out->c[cS] ? 0
+              : max == in->c[cR] ? 0 + (in->c[cG] - in->c[cB]) / d
+              : max == in->c[cG] ? 2 + (in->c[cB] - in->c[cR]) / d
+              :                    4 + (in->c[cR] - in->c[cG]) / d) * 256 / 6;
+
+  if (h < 0) h += 256;
+  out->c[cH] = h;
+  out->c[cA] = in->c[cA];
+}
+
+void colour_f_hsv2rgb(const colour_floats *in, colour_floats *out) {
+  if (in->c[cS] == 0) {
+    out->c[cR] = out->c[cG] = out->c[cB] = in->c[cV];
+  }
+  else {
+    double h = in->c[cH] * 6 / 256;
+    int sextant = (int) h;
+    double frac = h - sextant;
+    double p = in->c[cV] * (1 - in->c[cS] / 255);
+    double q = in->c[cV] * (1 - (in->c[cS] / 255 * frac));
+    double t = in->c[cV] * (1 - (in->c[cS] / 255 * (1 - frac)));
+    switch (sextant) {
+    case 0:
+      out->c[cR] = in->c[cV];
+      out->c[cG] = t;
+      out->c[cB] = p;
+      break;
+    case 1:
+      out->c[cR] = q;
+      out->c[cG] = in->c[cV];
+      out->c[cB] = p;
+      break;
+    case 2:
+      out->c[cR] = p;
+      out->c[cG] = in->c[cV];
+      out->c[cB] = t;
+      break;
+    case 3:
+      out->c[cR] = p;
+      out->c[cG] = q;
+      out->c[cB] = in->c[cV];
+      break;
+    case 4:
+      out->c[cR] = t;
+      out->c[cG] = p;
+      out->c[cB] = in->c[cV];
+      break;
+    case 5:
+      out->c[cR] = in->c[cV];
+      out->c[cG] = p;
+      out->c[cB] = q;
+      break;
+    }
+  }
+  out->c[cA] = in->c[cA];
+}
+
+void colour_b_rgb2hsv(const colour_bytes *in, colour_bytes *out) {
+  colour_floats inf, outf;
+  colour_b2f(in, &inf);
+  colour_f_rgb2hsv(&inf, &outf);
+  colour_f2b(&outf, out);
+}
+
+void colour_b_hsv2rgb(const colour_bytes *in, colour_bytes *out) {
+  colour_floats inf, outf;
+  colour_b2f(in, &inf);
+  colour_f_hsv2rgb(&inf, &outf);
+  colour_f2b(&outf, out);
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c

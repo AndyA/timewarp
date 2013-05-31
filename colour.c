@@ -28,6 +28,8 @@ void colour_b2f(const colour_bytes *in, colour_floats *out) {
     out->c[c] = in->c[c];
 }
 
+/* doubles */
+
 void colour_f_rgb2yuv(const colour_floats *in, colour_floats *out) {
   out->c[cY] = 16 +
                SCF(in->c[cR], 65.738) +
@@ -60,42 +62,6 @@ void colour_f_yuv2rgb(const colour_floats *in, colour_floats *out) {
   out->c[cB] = SCF(in->c[cY], 298.082) +
                SCF(in->c[cCb], 516.412) -
                276.836;
-
-  out->c[cA] = in->c[cA];
-}
-
-void colour_b_rgb2yuv(const colour_bytes *in, colour_bytes *out) {
-  out->c[cY] = clamp_b(16 +
-                       SCB(in->c[cR], 65.738) +
-                       SCB(in->c[cG], 129.057) +
-                       SCB(in->c[cB], 25.064), 16, 235);
-
-  out->c[cCb] = clamp_b(128 -
-                        SCB(in->c[cR], 37.945) -
-                        SCB(in->c[cG], 74.494) +
-                        SCB(in->c[cB], 112.439), 16, 240);
-
-  out->c[cCr] = clamp_b(128 +
-                        SCB(in->c[cR], 112.439) -
-                        SCB(in->c[cG], 94.154) -
-                        SCB(in->c[cB], 18.285), 16, 240);
-
-  out->c[cA] = in->c[cA];
-}
-
-void colour_b_yuv2rgb(const colour_bytes *in, colour_bytes *out) {
-  out->c[cR] = clamp_b(SCB(in->c[cY], 298.082) +
-                       SCB(in->c[cCr], 408.583) -
-                       222.921, 0, 255);
-
-  out->c[cG] = clamp_b(SCB(in->c[cY], 298.082) -
-                       SCB(in->c[cCb], 100.291) -
-                       SCB(in->c[cCr], 208.120) +
-                       135.576, 0, 255);
-
-  out->c[cB] = clamp_b(SCB(in->c[cY], 298.082) +
-                       SCB(in->c[cCb], 516.412) -
-                       276.836, 0, 255);
 
   out->c[cA] = in->c[cA];
 }
@@ -164,6 +130,56 @@ void colour_f_hsv2rgb(const colour_floats *in, colour_floats *out) {
   out->c[cA] = in->c[cA];
 }
 
+void colour_f_yuv2hsv(const colour_floats *in, colour_floats *out) {
+  colour_floats rgb;
+  colour_f_yuv2rgb(in, &rgb);
+  colour_f_rgb2hsv(&rgb, out);
+}
+
+void colour_f_hsv2yuv(const colour_floats *in, colour_floats *out) {
+  colour_floats rgb;
+  colour_f_hsv2rgb(in, &rgb);
+  colour_f_rgb2yuv(&rgb, out);
+}
+
+/* uint8_t */
+
+void colour_b_rgb2yuv(const colour_bytes *in, colour_bytes *out) {
+  out->c[cY] = clamp_b(16 +
+                       SCB(in->c[cR], 65.738) +
+                       SCB(in->c[cG], 129.057) +
+                       SCB(in->c[cB], 25.064), 16, 235);
+
+  out->c[cCb] = clamp_b(128 -
+                        SCB(in->c[cR], 37.945) -
+                        SCB(in->c[cG], 74.494) +
+                        SCB(in->c[cB], 112.439), 16, 240);
+
+  out->c[cCr] = clamp_b(128 +
+                        SCB(in->c[cR], 112.439) -
+                        SCB(in->c[cG], 94.154) -
+                        SCB(in->c[cB], 18.285), 16, 240);
+
+  out->c[cA] = in->c[cA];
+}
+
+void colour_b_yuv2rgb(const colour_bytes *in, colour_bytes *out) {
+  out->c[cR] = clamp_b(SCB(in->c[cY], 298.082) +
+                       SCB(in->c[cCr], 408.583) -
+                       222.921, 0, 255);
+
+  out->c[cG] = clamp_b(SCB(in->c[cY], 298.082) -
+                       SCB(in->c[cCb], 100.291) -
+                       SCB(in->c[cCr], 208.120) +
+                       135.576, 0, 255);
+
+  out->c[cB] = clamp_b(SCB(in->c[cY], 298.082) +
+                       SCB(in->c[cCb], 516.412) -
+                       276.836, 0, 255);
+
+  out->c[cA] = in->c[cA];
+}
+
 void colour_b_rgb2hsv(const colour_bytes *in, colour_bytes *out) {
   colour_floats inf, outf;
   colour_b2f(in, &inf);
@@ -177,6 +193,21 @@ void colour_b_hsv2rgb(const colour_bytes *in, colour_bytes *out) {
   colour_f_hsv2rgb(&inf, &outf);
   colour_f2b(&outf, out);
 }
+
+void colour_b_yuv2hsv(const colour_bytes *in, colour_bytes *out) {
+  colour_floats inf, outf;
+  colour_b2f(in, &inf);
+  colour_f_yuv2hsv(&inf, &outf);
+  colour_f2b(&outf, out);
+}
+
+void colour_b_hsv2yuv(const colour_bytes *in, colour_bytes *out) {
+  colour_floats inf, outf;
+  colour_b2f(in, &inf);
+  colour_f_hsv2yuv(&inf, &outf);
+  colour_f2b(&outf, out);
+}
+
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */

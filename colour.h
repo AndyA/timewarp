@@ -27,6 +27,9 @@ void colour_f_yuv2rgb(const colour_floats *in, colour_floats *out);
 void colour_f_rgb2hsv(const colour_floats *in, colour_floats *out);
 void colour_f_hsv2rgb(const colour_floats *in, colour_floats *out);
 
+void colour_f_yuv2hsv(const colour_floats *in, colour_floats *out);
+void colour_f_hsv2yuv(const colour_floats *in, colour_floats *out);
+
 /* uint8_t */
 
 void colour_b2f(const colour_bytes *in, colour_floats *out);
@@ -36,6 +39,9 @@ void colour_b_yuv2rgb(const colour_bytes *in, colour_bytes *out);
 
 void colour_b_rgb2hsv(const colour_bytes *in, colour_bytes *out);
 void colour_b_hsv2rgb(const colour_bytes *in, colour_bytes *out);
+
+void colour_b_yuv2hsv(const colour_bytes *in, colour_bytes *out);
+void colour_b_hsv2yuv(const colour_bytes *in, colour_bytes *out);
 
 #endif
 

@@ -15,6 +15,7 @@ libtimewarp_la_SOURCES = \
 	colour.h colour.c \
 	filter.h filter.c \
 	hist.h hist.c \
+	histogram.h histogram.c \
 	massive.h massive.c \
 	merge.h merge.c \
 	minmax.h minmax.c \

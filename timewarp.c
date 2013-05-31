@@ -7,6 +7,7 @@
 #include <jd_pretty.h>
 
 #include "filter.h"
+#include "histogram.h"
 #include "massive.h"
 #include "merge.h"
 #include "minmax.h"
@@ -20,6 +21,7 @@ static void setup(void) {
   filter_init();
 
   /* add filters here */
+  histogram_register();
   massive_register();
   merge_register();
   minmax_register();

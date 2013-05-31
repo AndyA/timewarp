@@ -1,4 +1,4 @@
-/* basic.t */
+/* basic.c */
 
 #include "framework.h"
 #include "tap.h"

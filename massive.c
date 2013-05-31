@@ -26,6 +26,8 @@ typedef struct {
   int disabled;
   double mass;
   double drag;
+  double attraction;
+  double mix;
   double rms_fwd_weight;
   double rms_inv_weight;
   double intensity_fwd_mass;
@@ -65,6 +67,8 @@ static void massive__config_plane(massive__plane *p, jd_var *opt) {
   p->disabled = model_get_int(opt, 0, "$.disabled");
   p->mass = model_get_real(opt, 1, "$.mass");
   p->drag = model_get_real(opt, 0, "$.drag");
+  p->attraction = model_get_real(opt, 1, "$.attraction");
+  p->mix = model_get_real(opt, 1, "$.mix");
 
   p->rms_fwd_weight = model_get_real(opt, 0, "$.rms_fwd_weight");
   p->rms_inv_weight = model_get_real(opt, 1, "$.rms_inv_weight");
@@ -100,11 +104,13 @@ static void massive__frame(filter *filt, const y4m2_parameters *parms, y4m2_fram
     uint8_t *pp = wrk->prev->buf;
 
     for (unsigned p = 0; p < Y4M2_N_PLANE; p++) {
-      if (!plane[p].disabled) {
+      if (!plane[p].disabled && plane[p].mix != 0) {
         double min = (p == Y4M2_Y_PLANE) ? 16 : 0;
         double max = (p == Y4M2_Y_PLANE) ? 235 : 255;
         double drag = plane[p].drag;
         double mass = plane[p].mass;
+        double attraction = plane[p].attraction;
+        double mix = plane[p].mix;
         double fwd_weight = plane[p].rms_fwd_weight;
         double inv_weight = plane[p].rms_inv_weight;
         double fwd_mass = plane[p].intensity_fwd_mass;
@@ -123,18 +129,18 @@ static void massive__frame(filter *filt, const y4m2_parameters *parms, y4m2_fram
             double rms = sqrt(dp->rms = average_next(
                                           &plane[p].rms_acc, dp->rms, dy * dy));
             if (rms < SIGMA) rms = SIGMA;
-            local_mass = mass + (fwd_weight * rms) + (inv_weight / rms);
-            if (local_mass < SIGMA) local_mass = SIGMA;
+            local_mass += (fwd_weight * rms) + (inv_weight / rms);
           }
 
-          double force = (*fp - dp->position) - (dp->velocity * fabs(dp->velocity) * drag);
-          dp->velocity += force / local_mass;
+          if (local_mass < SIGMA) local_mass = SIGMA;
 
+          double force = (*fp - dp->position) * attraction -
+                         (dp->velocity * fabs(dp->velocity) * drag);
+          dp->velocity += force / local_mass;
           double sample = dp->position += dp->velocity;
           if (sample < min) sample = min;
           if (sample > max) sample = max;
-          *pp++ = (uint8_t) sample;
-          fp++;
+          *pp++ = mix * (uint8_t) sample + (1 - mix) * *fp++;
           dp++;
         }
 

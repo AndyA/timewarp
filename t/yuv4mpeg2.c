@@ -80,7 +80,7 @@ static void random_frame(y4m2_frame *frame) {
 
 static void test_float(void) {
   y4m2_parameters *p = y4m2_new_parms();
-  char pstr[] = "W1920 H1080 A1:1 Ip F25:1 C420\n";
+  char pstr[] = "W1280 H720 A1:1 Ip F25:1 C420\n";
   y4m2__parse_parms(p, pstr);
 
   y4m2_frame *frame = y4m2_new_frame(p);

@@ -1,6 +1,7 @@
 /* colour.c */
 
 #include <stdint.h>
+#include <stdlib.h>
 
 #include "colour.h"
 
@@ -207,6 +208,30 @@ void colour_b_hsv2yuv(const colour_bytes *in, colour_bytes *out) {
   colour_f_hsv2yuv(&inf, &outf);
   colour_f2b(&outf, out);
 }
+
+/* Arrays */
+
+#define SPLICE(a, b)    a ## b
+#define PASTE2(a, b)    SPLICE(a, b)
+
+#define ARRAY_OP(sig, type) \
+  void PASTE2(sig, _array)(const type *in, type *out, size_t len) { \
+    for (unsigned i = 0; i < len; i++)                              \
+      sig(in++, out++);                                             \
+  }
+
+ARRAY_OP(colour_f_rgb2yuv, colour_floats)
+ARRAY_OP(colour_f_yuv2rgb, colour_floats)
+ARRAY_OP(colour_f_rgb2hsv, colour_floats)
+ARRAY_OP(colour_f_hsv2rgb, colour_floats)
+ARRAY_OP(colour_f_yuv2hsv, colour_floats)
+ARRAY_OP(colour_f_hsv2yuv, colour_floats)
+ARRAY_OP(colour_b_rgb2yuv, colour_bytes)
+ARRAY_OP(colour_b_yuv2rgb, colour_bytes)
+ARRAY_OP(colour_b_rgb2hsv, colour_bytes)
+ARRAY_OP(colour_b_hsv2rgb, colour_bytes)
+ARRAY_OP(colour_b_yuv2hsv, colour_bytes)
+ARRAY_OP(colour_b_hsv2yuv, colour_bytes)
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */

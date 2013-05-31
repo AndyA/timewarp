@@ -6,6 +6,10 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#define colour__SPLICE(a, b)    a ## b
+#define colour__PASTE(a, b)     colour__SPLICE(a, b)
+#define colour__PASTE3(a, b, c) colour__PASTE(colour__PASTE(a, b), c)
+
 enum { cR, cG, cB, cA, cMAX };
 enum { cY, cCb, cCr };
 enum { cH, cS, cV };
@@ -21,45 +25,24 @@ typedef struct {
 void colour_f2b(const colour_floats *in, colour_bytes *out);
 void colour_b2f(const colour_bytes *in, colour_floats *out);
 
-/* doubles */
+#define colour_DECLARE(op) \
+  void colour__PASTE(colour_f_, op)(const colour_floats *in,          \
+                                    colour_floats *out);              \
+  void colour__PASTE3(colour_f_, op, _array)(const colour_floats *in, \
+      colour_floats *out,      \
+      size_t len);             \
+  void colour__PASTE(colour_b_, op)(const colour_bytes *in,           \
+                                    colour_bytes *out);               \
+  void colour__PASTE3(colour_b_, op, _array)(const colour_bytes *in,  \
+      colour_bytes *out,       \
+      size_t len);
 
-void colour_f_rgb2yuv(const colour_floats *in, colour_floats *out);
-void colour_f_yuv2rgb(const colour_floats *in, colour_floats *out);
-
-void colour_f_rgb2hsv(const colour_floats *in, colour_floats *out);
-void colour_f_hsv2rgb(const colour_floats *in, colour_floats *out);
-
-void colour_f_yuv2hsv(const colour_floats *in, colour_floats *out);
-void colour_f_hsv2yuv(const colour_floats *in, colour_floats *out);
-
-void colour_f_rgb2yuv_array(const colour_floats *in, colour_floats *out, size_t len);
-void colour_f_yuv2rgb_array(const colour_floats *in, colour_floats *out, size_t len);
-
-void colour_f_rgb2hsv_array(const colour_floats *in, colour_floats *out, size_t len);
-void colour_f_hsv2rgb_array(const colour_floats *in, colour_floats *out, size_t len);
-
-void colour_f_yuv2hsv_array(const colour_floats *in, colour_floats *out, size_t len);
-void colour_f_hsv2yuv_array(const colour_floats *in, colour_floats *out, size_t len);
-
-/* uint8_t */
-
-void colour_b_rgb2yuv(const colour_bytes *in, colour_bytes *out);
-void colour_b_yuv2rgb(const colour_bytes *in, colour_bytes *out);
-
-void colour_b_rgb2hsv(const colour_bytes *in, colour_bytes *out);
-void colour_b_hsv2rgb(const colour_bytes *in, colour_bytes *out);
-
-void colour_b_yuv2hsv(const colour_bytes *in, colour_bytes *out);
-void colour_b_hsv2yuv(const colour_bytes *in, colour_bytes *out);
-
-void colour_b_rgb2yuv_array(const colour_bytes *in, colour_bytes *out, size_t len);
-void colour_b_yuv2rgb_array(const colour_bytes *in, colour_bytes *out, size_t len);
-
-void colour_b_rgb2hsv_array(const colour_bytes *in, colour_bytes *out, size_t len);
-void colour_b_hsv2rgb_array(const colour_bytes *in, colour_bytes *out, size_t len);
-
-void colour_b_yuv2hsv_array(const colour_bytes *in, colour_bytes *out, size_t len);
-void colour_b_hsv2yuv_array(const colour_bytes *in, colour_bytes *out, size_t len);
+colour_DECLARE(rgb2yuv);
+colour_DECLARE(yuv2rgb);
+colour_DECLARE(rgb2hsv);
+colour_DECLARE(hsv2rgb);
+colour_DECLARE(yuv2hsv);
+colour_DECLARE(hsv2yuv);
 
 #endif
 

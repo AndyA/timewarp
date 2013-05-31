@@ -211,11 +211,11 @@ void colour_b_hsv2yuv(const colour_bytes *in, colour_bytes *out) {
 
 /* Arrays */
 
-#define SPLICE(a, b)    a ## b
-#define PASTE2(a, b)    SPLICE(a, b)
+#define SPLICE(a, b)   a ## b
+#define PASTE(a, b)    SPLICE(a, b)
 
 #define ARRAY_OP(sig, type) \
-  void PASTE2(sig, _array)(const type *in, type *out, size_t len) { \
+  void PASTE(sig, _array)(const type *in, type *out, size_t len) { \
     for (unsigned i = 0; i < len; i++)                              \
       sig(in++, out++);                                             \
   }

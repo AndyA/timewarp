@@ -16,12 +16,12 @@ typedef struct {
 static void minmax__free(minmax__work *wrk) {
   if (wrk) {
     if (wrk->acc) y4m2_release_frame(wrk->acc);
-    y4m2_free(wrk);
+    jd_free(wrk);
   }
 }
 
 static void minmax__start(filter *filt, const y4m2_parameters *parms) {
-  if (!filt->ctx) filt->ctx = y4m2_alloc(sizeof(minmax__work));
+  if (!filt->ctx) filt->ctx = jd_alloc(sizeof(minmax__work));
   y4m2_emit_start(filt->out, parms);
 }
 

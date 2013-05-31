@@ -4,48 +4,35 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "jd_pretty.h"
 #include "yuv4mpeg2.h"
 
 static const char *tag[] = {
   "YUV4MPEG2", "FRAME"
 };
 
-void *y4m2_alloc(size_t size) {
-  void *m = malloc(size);
-  if (!m) {
-    fprintf(stderr, "Out of memory for %lu bytes\n", (unsigned long) size);
-    abort();
-  }
-  memset(m, 0, size);
-  return m;
-}
-
-void y4m2_free(void *m) {
-  free(m);
-}
-
-static void y4m2__set(char **slot, const char *value) {
-  if (*slot) y4m2_free(*slot);
-  if (value) {
-    size_t l = strlen(value);
-    *slot = y4m2_alloc(l + 1);
-    memcpy(*slot, value, l + 1);
-  }
-  else {
-    *slot = NULL;
-  }
-}
-
 y4m2_parameters *y4m2_new_parms(void) {
-  return y4m2_alloc(sizeof(y4m2_parameters));
+  return jd_alloc(sizeof(y4m2_parameters));
 }
 
 void y4m2_free_parms(y4m2_parameters *parms) {
   int i;
   if (parms) {
     for (i = 0; i < Y4M2_PARMS; i++)
-      y4m2_free(parms->parm[i]);
-    y4m2_free(parms);
+      jd_free(parms->parm[i]);
+    jd_free(parms);
+  }
+}
+
+static void y4m2__set(char **slot, const char *value) {
+  if (*slot) jd_free(*slot);
+  if (value) {
+    size_t l = strlen(value);
+    *slot = jd_alloc(l + 1);
+    memcpy(*slot, value, l + 1);
+  }
+  else {
+    *slot = NULL;
   }
 }
 
@@ -136,8 +123,8 @@ void y4m2_parse_frame_info(y4m2_frame_info *info, const y4m2_parameters *parms) 
 }
 
 y4m2_frame *y4m2_new_frame_info(const y4m2_frame_info *info) {
-  y4m2_frame *frame = y4m2_alloc(sizeof(y4m2_frame));
-  uint8_t *buf = frame->buf = y4m2_alloc(info->size);
+  y4m2_frame *frame = jd_alloc(sizeof(y4m2_frame));
+  uint8_t *buf = frame->buf = jd_alloc(info->size);
 
   for (int i = 0; i < Y4M2_N_PLANE; i++) {
     frame->plane[i] = buf;
@@ -155,9 +142,9 @@ y4m2_frame *y4m2_new_frame(const y4m2_parameters *parms) {
 }
 
 y4m2_frame *y4m2_like_frame(const y4m2_frame *frame) {
-  y4m2_frame *nf = y4m2_alloc(sizeof(y4m2_frame));
+  y4m2_frame *nf = jd_alloc(sizeof(y4m2_frame));
   *nf = *frame;
-  nf->buf = y4m2_alloc(frame->i.size);
+  nf->buf = jd_alloc(frame->i.size);
   nf->refcnt = 0;
   return y4m2_retain_frame(nf);
 }
@@ -171,8 +158,8 @@ y4m2_frame *y4m2_clone_frame(const y4m2_frame *frame) {
 
 void y4m2_free_frame(y4m2_frame *frame) {
   if (frame) {
-    y4m2_free(frame->buf);
-    y4m2_free(frame);
+    jd_free(frame->buf);
+    jd_free(frame);
   }
 }
 
@@ -324,14 +311,14 @@ int y4m2_emit_end(y4m2_output *out) {
 }
 
 y4m2_output *y4m2_output_file(FILE *out) {
-  y4m2_output *o = y4m2_alloc(sizeof(y4m2_output));
+  y4m2_output *o = jd_alloc(sizeof(y4m2_output));
   o->type = Y4M2_OUTPUT_FILE;
   o->o.f = out;
   return o;
 }
 
 y4m2_output *y4m2_output_next(y4m2_callback cb, void *ctx) {
-  y4m2_output *o = y4m2_alloc(sizeof(y4m2_output));
+  y4m2_output *o = jd_alloc(sizeof(y4m2_output));
   o->type = Y4M2_OUTPUT_NEXT;
   o->o.n.cb = cb;
   o->o.n.ctx = ctx;
@@ -339,7 +326,7 @@ y4m2_output *y4m2_output_next(y4m2_callback cb, void *ctx) {
 }
 
 void y4m2_free_output(y4m2_output *out) {
-  y4m2_free(out);
+  jd_free(out);
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c

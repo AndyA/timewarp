@@ -57,7 +57,7 @@ static void fh__callback(y4m2_reason reason,
     break;
   case Y4M2_END:
     jd_release(&wrk->capture);
-    y4m2_free(wrk);
+    jd_free(wrk);
     break;
   }
 }
@@ -69,7 +69,7 @@ static y4m2_frame *fh__new_frame(void) {
 }
 
 y4m2_output *fh_get_output(jd_var *capture) {
-  fh__work *wrk = y4m2_alloc(sizeof(fh__work));
+  fh__work *wrk = jd_alloc(sizeof(fh__work));
   jd_set_array(&wrk->capture, 100);
   if (capture) jd_assign(capture, &wrk->capture);
   return y4m2_output_next(fh__callback, wrk);

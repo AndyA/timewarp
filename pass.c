@@ -1,5 +1,7 @@
 /* pass.c */
 
+#include <jd_pretty.h>
+
 #include "pass.h"
 #include "yuv4mpeg2.h"
 
@@ -19,13 +21,13 @@ static void pass__callback(y4m2_reason reason,
     break;
   case Y4M2_END:
     y4m2_emit_end(wrk->out);
-    y4m2_free(ctx);
+    jd_free(ctx);
     break;
   }
 }
 
 y4m2_output *pass_hook(y4m2_output *out) {
-  pass__work *wrk = y4m2_alloc(sizeof(pass__work));
+  pass__work *wrk = jd_alloc(sizeof(pass__work));
   wrk->out = out;
   return y4m2_output_next(pass__callback, wrk);
 }

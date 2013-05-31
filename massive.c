@@ -43,14 +43,14 @@ typedef struct {
 
 static void massive__free(massive__work *wrk) {
   if (wrk) {
-    y4m2_free(wrk->data);
+    jd_free(wrk->data);
     y4m2_release_frame(wrk->prev);
-    y4m2_free(wrk);
+    jd_free(wrk);
   }
 }
 
 static void massive__setup(y4m2_frame *frame, massive__work *wrk) {
-  massive__datum *dp = wrk->data = y4m2_alloc(frame->i.size * sizeof(massive__datum));
+  massive__datum *dp = wrk->data = jd_alloc(frame->i.size * sizeof(massive__datum));
   uint8_t *fp = frame->buf;
 
   for (unsigned p = 0; p < Y4M2_N_PLANE; p++) {
@@ -88,7 +88,7 @@ static void massive__config_parse(massive__plane *pl, jd_var *opt) {
 }
 
 static void massive__start(filter *filt, const y4m2_parameters *parms) {
-  if (!filt->ctx) filt->ctx = y4m2_alloc(sizeof(massive__work));
+  if (!filt->ctx) filt->ctx = jd_alloc(sizeof(massive__work));
   y4m2_emit_start(filt->out, parms);
 }
 

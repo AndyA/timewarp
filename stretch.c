@@ -20,12 +20,12 @@ static void stretch__free(stretch__work *wrk) {
   if (wrk) {
     y4m2_release_frame(wrk->prev);
     y4m2_release_frame(wrk->tmp);
-    y4m2_free(wrk);
+    jd_free(wrk);
   }
 }
 
 static void stretch__start(filter *filt, const y4m2_parameters *parms) {
-  if (!filt->ctx) filt->ctx = y4m2_alloc(sizeof(stretch__work));
+  if (!filt->ctx) filt->ctx = jd_alloc(sizeof(stretch__work));
   y4m2_emit_start(filt->out, parms);
 }
 

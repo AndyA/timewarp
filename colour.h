@@ -25,6 +25,14 @@ typedef struct {
 void colour_f2b(const colour_floats *in, colour_bytes *out);
 void colour_b2f(const colour_bytes *in, colour_floats *out);
 
+#define colour_OPS \
+  X(rgb2yuv) \
+  X(yuv2rgb) \
+  X(rgb2hsv) \
+  X(hsv2rgb) \
+  X(yuv2hsv) \
+  X(hsv2yuv)
+
 #define colour_DECLARE(op) \
   void colour__PASTE(colour_f_, op)(const colour_floats *in,          \
                                     colour_floats *out);              \
@@ -37,12 +45,9 @@ void colour_b2f(const colour_bytes *in, colour_floats *out);
       colour_bytes *out,       \
       size_t len);
 
-colour_DECLARE(rgb2yuv);
-colour_DECLARE(yuv2rgb);
-colour_DECLARE(rgb2hsv);
-colour_DECLARE(hsv2rgb);
-colour_DECLARE(yuv2hsv);
-colour_DECLARE(hsv2yuv);
+#define X colour_DECLARE
+colour_OPS
+#undef X
 
 #endif
 

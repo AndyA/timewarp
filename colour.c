@@ -211,27 +211,19 @@ void colour_b_hsv2yuv(const colour_bytes *in, colour_bytes *out) {
 
 /* Arrays */
 
-#define SPLICE(a, b)   a ## b
-#define PASTE(a, b)    SPLICE(a, b)
-
 #define ARRAY_OP(sig, type) \
-  void PASTE(sig, _array)(const type *in, type *out, size_t len) { \
+  void colour__PASTE(sig, _array)(const type *in, type *out, size_t len) { \
     for (unsigned i = 0; i < len; i++)                              \
       sig(in++, out++);                                             \
   }
 
-ARRAY_OP(colour_f_rgb2yuv, colour_floats)
-ARRAY_OP(colour_f_yuv2rgb, colour_floats)
-ARRAY_OP(colour_f_rgb2hsv, colour_floats)
-ARRAY_OP(colour_f_hsv2rgb, colour_floats)
-ARRAY_OP(colour_f_yuv2hsv, colour_floats)
-ARRAY_OP(colour_f_hsv2yuv, colour_floats)
-ARRAY_OP(colour_b_rgb2yuv, colour_bytes)
-ARRAY_OP(colour_b_yuv2rgb, colour_bytes)
-ARRAY_OP(colour_b_rgb2hsv, colour_bytes)
-ARRAY_OP(colour_b_hsv2rgb, colour_bytes)
-ARRAY_OP(colour_b_yuv2hsv, colour_bytes)
-ARRAY_OP(colour_b_hsv2yuv, colour_bytes)
+#define ARRAY_OPS(op) \
+  ARRAY_OP(colour__PASTE(colour_f_, op), colour_floats) \
+  ARRAY_OP(colour__PASTE(colour_b_, op), colour_bytes)
+
+#define X ARRAY_OPS
+colour_OPS
+#undef X
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */

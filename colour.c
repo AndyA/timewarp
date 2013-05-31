@@ -208,6 +208,5 @@ void colour_b_hsv2yuv(const colour_bytes *in, colour_bytes *out) {
   colour_f2b(&outf, out);
 }
 
-
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */

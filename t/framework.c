@@ -164,7 +164,7 @@ int main(int argc, char *argv[]) {
 
   if (argc > 1)
     count = atoi(argv[1]);
-  else if (tc_env = getenv("PS_TEST_COUNT"), tc_env)
+  else if (tc_env = getenv("TEST_COUNT"), tc_env)
     count = atoi(tc_env);
 
   for (i = 0; i < count; i++)

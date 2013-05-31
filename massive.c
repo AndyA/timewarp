@@ -104,7 +104,12 @@ static void massive__frame(filter *filt, const y4m2_parameters *parms, y4m2_fram
     uint8_t *pp = wrk->prev->buf;
 
     for (unsigned p = 0; p < Y4M2_N_PLANE; p++) {
-      if (!plane[p].disabled && plane[p].mix != 0) {
+      if (plane[p].disabled) {
+        dp += frame->i.plane[p].size;
+        fp += frame->i.plane[p].size;
+        pp += frame->i.plane[p].size;
+      }
+      else {
         double min = (p == Y4M2_Y_PLANE) ? 16 : 16;
         double max = (p == Y4M2_Y_PLANE) ? 235 : 240;
         double drag = plane[p].drag;

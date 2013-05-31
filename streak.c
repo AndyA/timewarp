@@ -15,7 +15,6 @@
 
 typedef struct {
   double *acc;
-  double decay;
   double scale;
 } streak__work;
 

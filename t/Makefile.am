@@ -1,4 +1,4 @@
-TESTBIN = basic yuv4mpeg2 model massive merge colour
+TESTBIN = basic yuv4mpeg2 model massive merge colour hist
 
 TESTPERL = perl.t
 

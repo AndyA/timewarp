@@ -11,18 +11,19 @@ noinst_LTLIBRARIES = libtimewarp.la
 bin_PROGRAMS = timewarp
 
 libtimewarp_la_SOURCES = \
-	yuv4mpeg2.h yuv4mpeg2.c \
-	colour.h colour.c \
-	model.h model.c \
-	filter.h filter.c \
 	average.h average.c \
+	colour.h colour.c \
+	filter.h filter.c \
+	hist.h hist.c \
+	massive.h massive.c \
 	merge.h merge.c \
-	peak.h peak.c \
 	minmax.h minmax.c \
+	model.h model.c \
+	pass.h pass.c \
+	peak.h peak.c \
 	streak.h streak.c \
 	stretch.h stretch.c \
-	massive.h massive.c \
-	pass.h pass.c
+	yuv4mpeg2.h yuv4mpeg2.c
 
 libtimewarp_la_LDFLAGS = -avoid-version -static
 

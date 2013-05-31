@@ -1,10 +1,11 @@
 /* yuv4mpeg2.c */
 
+#include <stdlib.h>
 #include <string.h>
 
+#include "colour.h"
 #include "framework.h"
 #include "tap.h"
-
 #include "yuv4mpeg2.h"
 
 static void test_parms(void) {
@@ -61,9 +62,51 @@ static void test_parse(void) {
   y4m2_free_parms(p);
 }
 
+static void random_frame(y4m2_frame *frame) {
+  uint8_t *bp = frame->buf;
+  for (unsigned p = 0; p < Y4M2_N_PLANE; p++) {
+    unsigned min = 16;
+    unsigned max = (p == Y4M2_Y_PLANE ? 235 : 240);
+    for (unsigned i = 0; i < frame->i.plane[p].size; i++) {
+      uint8_t sample;
+      do {
+        sample = rand() & 0xFF;
+      }
+      while (sample < min || sample > max);
+      *bp++ = sample;
+    }
+  }
+}
+
+static void test_float(void) {
+  y4m2_parameters *p = y4m2_new_parms();
+  char pstr[] = "W1920 H1080 A1:1 Ip F25:1 C420\n";
+  y4m2__parse_parms(p, pstr);
+
+  y4m2_frame *frame = y4m2_new_frame(p);
+
+  size_t fsize = frame->i.width * frame->i.height;
+  colour_floats *ff = jd_alloc(sizeof(colour_floats) * fsize);
+
+  random_frame(frame);
+  y4m2_frame *tmp = y4m2_like_frame(frame);
+
+  y4m2_frame_to_float(frame, ff);
+  y4m2_float_to_frame(ff, tmp);
+
+  ok(memcmp(tmp->buf, frame->buf, frame->i.size) == 0,
+     "frame_to_float, float_to_frame");
+
+  jd_free(ff);
+  y4m2_release_frame(tmp);
+  y4m2_release_frame(frame);
+  y4m2_free_parms(p);
+}
+
 void test_main(void) {
   test_parms();
   test_parse();
+  test_float();
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c

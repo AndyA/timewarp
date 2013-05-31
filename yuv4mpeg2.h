@@ -6,6 +6,8 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#include "colour.h"
+
 #define Y4M2_FIRST 'A'
 #define Y4M2_LAST 'Z'
 #define Y4M2_PARMS (Y4M2_LAST-Y4M2_FIRST+1)
@@ -76,6 +78,9 @@ int y4m2_emit_end(y4m2_output *out);
 y4m2_output *y4m2_output_file(FILE *out);
 y4m2_output *y4m2_output_next(y4m2_callback cb, void *ctx);
 void y4m2_free_output(y4m2_output *out);
+
+size_t y4m2_frame_to_float(const y4m2_frame *in, colour_floats *out);
+void y4m2_float_to_frame(const colour_floats *in, y4m2_frame *out);
 
 #endif
 

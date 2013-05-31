@@ -1,10 +1,11 @@
 /* yuv4mpeg2.c */
 
+#include <jd_pretty.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "jd_pretty.h"
+#include "colour.h"
 #include "yuv4mpeg2.h"
 
 static const char *tag[] = {
@@ -20,7 +21,7 @@ void y4m2_free_parms(y4m2_parameters *parms) {
   if (parms) {
     for (i = 0; i < Y4M2_PARMS; i++)
       jd_free(parms->parm[i]);
-   jd_free(parms);
+    jd_free(parms);
   }
 }
 
@@ -327,6 +328,80 @@ y4m2_output *y4m2_output_next(y4m2_callback cb, void *ctx) {
 
 void y4m2_free_output(y4m2_output *out) {
   jd_free(out);
+}
+
+static unsigned y4m2__log2(unsigned x) {
+  unsigned shift = 0;
+  while (x > (1 << shift)) shift++;
+  return shift;
+}
+
+static void y4m2__plane_map(const y4m2_frame *in,
+                            uint8_t *plane[Y4M2_N_PLANE],
+                            unsigned xs[Y4M2_N_PLANE],
+                            unsigned ys[Y4M2_N_PLANE]) {
+  uint8_t *bp = in->buf;
+
+  for (unsigned p = 0; p < Y4M2_N_PLANE; p++) {
+    plane[p] = bp;
+    xs[p] = y4m2__log2(in->i.plane[p].xs);
+    ys[p] = y4m2__log2(in->i.plane[p].ys);
+    bp += in->i.plane[p].size;
+  }
+}
+
+/* colourspace */
+
+size_t y4m2_frame_to_float(const y4m2_frame *in, colour_floats *out) {
+  uint8_t *plane[Y4M2_N_PLANE];
+  unsigned xs[Y4M2_N_PLANE], ys[Y4M2_N_PLANE];
+  unsigned width = in->i.width;
+  unsigned height = in->i.height;
+
+  y4m2__plane_map(in, plane, xs, ys);
+
+  for (unsigned p = 0; p < Y4M2_N_PLANE; p++) {
+    for (unsigned y = 0; y < height; y++) {
+      for (unsigned x = 0; x < width; x++) {
+        out[y * width + x].c[p] =
+          plane[p][(y >> ys[p]) * (width >> xs[p]) + (x >> xs[p])];
+      }
+    }
+  }
+
+  return width * height;
+}
+
+void y4m2_float_to_frame(const colour_floats *in, y4m2_frame *out) {
+  uint8_t *plane[Y4M2_N_PLANE];
+  unsigned xs[Y4M2_N_PLANE], ys[Y4M2_N_PLANE];
+  unsigned width = out->i.width;
+  unsigned height = out->i.height;
+
+  y4m2__plane_map(out, plane, xs, ys);
+
+  for (unsigned p = 0; p < Y4M2_N_PLANE; p++) {
+    unsigned plw = width >> xs[p];
+    unsigned plh = height >> ys[p];
+    unsigned pxw = out->i.plane[p].xs;
+    unsigned pxh = out->i.plane[p].ys;
+    double area = pxw * pxh;
+
+    for (unsigned y = 0; y < plh; y++) {
+      for (unsigned x = 0; x < plw; x++) {
+        double sum = 0;
+
+        for (unsigned yy = 0; yy < pxh; yy++)
+          for (unsigned xx = 0; xx < pxw; xx++)
+            sum += in[((y << ys[p]) + yy) * width + (x << xs[p]) + xx].c[p];
+
+        double sample = sum / area;
+        if (sample < 0) sample = 0;
+        if (sample > 255) sample = 255;
+        plane[p][y * plw + x] = (uint8_t)sample;
+      }
+    }
+  }
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c

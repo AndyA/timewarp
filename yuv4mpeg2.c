@@ -20,7 +20,7 @@ void y4m2_free_parms(y4m2_parameters *parms) {
   if (parms) {
     for (i = 0; i < Y4M2_PARMS; i++)
       jd_free(parms->parm[i]);
-    jd_free(parms);
+   jd_free(parms);
   }
 }
 

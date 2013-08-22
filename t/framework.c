@@ -20,7 +20,7 @@ void tf_die(const char *msg, ...) {
 }
 
 void *tf_alloc(size_t len) {
-  void *m;
+  void *m = NULL;
   if (len == 0 || (m = calloc(1, len), !m))
     tf_die("Can't allocate %llu bytes", (unsigned long long) len);
   return m;

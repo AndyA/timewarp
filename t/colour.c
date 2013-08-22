@@ -16,7 +16,7 @@ typedef void (*fmap)(const colour_floats *in, colour_floats *out);
 typedef void (*bmap)(const colour_bytes *in, colour_bytes *out);
 
 static void roundtrip_floats(const char *title,
-                             const colour_floats const *in, size_t count,
+                             const colour_floats *in, size_t count,
                              fmap fwd, fmap inv) {
 
   for (unsigned i = 0; i < count; i++) {
@@ -38,7 +38,7 @@ static void roundtrip_floats(const char *title,
 }
 
 static void roundtrip_bytes(const char *title,
-                            const colour_bytes const *in, size_t count,
+                            const colour_bytes *in, size_t count,
                             bmap fwd, bmap inv) {
 
   for (unsigned i = 0; i < count; i++) {

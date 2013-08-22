@@ -28,7 +28,7 @@ static void test_load(void) {
   }
 }
 
-static jd_var *resource_list(jd_var *out, const char const *res[]) {
+static jd_var *resource_list(jd_var *out, const char *res[]) {
   jd_set_array(out, 10);
   for (unsigned i = 0; res[i]; i++) {
     char *rname = tf_resource(res[i]);

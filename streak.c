@@ -11,8 +11,6 @@
 #include "streak.h"
 #include "yuv4mpeg2.h"
 
-#define SHIFT 23
-
 typedef struct {
   double *acc;
   double scale;

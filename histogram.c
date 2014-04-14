@@ -49,8 +49,10 @@ static void histogram__frame(filter *filt, const y4m2_parameters *parms, y4m2_fr
       histogram__scale_map(rev_map, 256,
                            16, p == Y4M2_Y_PLANE ? 235 : 240,
                            xmap);
-      for (unsigned i = 0; i < frame->i.plane[p].size; i++)
-        *fp++ = xmap[*fp];
+      for (unsigned i = 0; i < frame->i.plane[p].size; i++) {
+        *fp = xmap[*fp];
+        fp++;
+      }
     }
   }
 

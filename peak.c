@@ -57,7 +57,8 @@ static void peak__frame(filter *filt, const y4m2_parameters *parms, y4m2_frame *
       double scale = *sp;
       for (unsigned i = 0; i < frame->i.plane[p].size; i++) {
         double sample = *fp;
-        double next = (*ap++ = *ap * decay + sample) / scale;
+        double next = (*ap = *ap * decay + sample) / scale;
+        ap++;
         *fp++ = (uint8_t)(sample > next ? sample : next);
       }
       *sp++ = scale * decay + 1;

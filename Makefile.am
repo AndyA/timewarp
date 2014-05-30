@@ -20,7 +20,6 @@ libtimewarp_la_SOURCES = \
 	merge.h merge.c \
 	minmax.h minmax.c \
 	model.h model.c \
-	most.h most.c \
 	pass.h pass.c \
 	peak.h peak.c \
 	streak.h streak.c \

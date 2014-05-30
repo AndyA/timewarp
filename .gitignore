@@ -29,6 +29,7 @@
 /Session.vim
 /TAGS
 /autom4te.cache
+/compile
 /config.cache
 /config.guess
 /config.h
@@ -43,6 +44,7 @@
 /libtool
 /ltmain.sh
 /missing
+/pipecleanr
 /stamp-h*
 /tags
 /test.*

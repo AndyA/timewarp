@@ -12,6 +12,7 @@
 #include "merge.h"
 #include "minmax.h"
 #include "model.h"
+#include "most.h"
 #include "peak.h"
 #include "streak.h"
 #include "stretch.h"
@@ -24,6 +25,7 @@ static void setup(void) {
   histogram_register();
   massive_register();
   merge_register();
+  most_register();
   minmax_register();
   peak_register();
   streak_register();

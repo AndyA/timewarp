@@ -8,7 +8,7 @@ ACLOCAL_AMFLAGS = -I m4
 
 noinst_LTLIBRARIES = libtimewarp.la
 
-bin_PROGRAMS = timewarp
+bin_PROGRAMS = timewarp pipecleanr
 
 libtimewarp_la_SOURCES = \
 	average.h average.c \
@@ -20,6 +20,7 @@ libtimewarp_la_SOURCES = \
 	merge.h merge.c \
 	minmax.h minmax.c \
 	model.h model.c \
+	most.h most.c \
 	pass.h pass.c \
 	peak.h peak.c \
 	streak.h streak.c \
@@ -28,9 +29,15 @@ libtimewarp_la_SOURCES = \
 
 libtimewarp_la_LDFLAGS = -avoid-version -static
 
+
 timewarp_SOURCES = timewarp.c
 
 timewarp_LDADD = libtimewarp.la
+
+pipecleanr_SOURCES = pipecleanr.c
+
+pipecleanr_LDADD = libtimewarp.la
+
 
 test: all
 	cd t && $(MAKE) test

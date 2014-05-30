@@ -71,6 +71,18 @@ void y4m2_set_parm(y4m2_parameters *parms, const char *name, const char *value) 
   y4m2__set(&(parms->parm[idx]), value);
 }
 
+int y4m2_equal_parms(const y4m2_parameters *this, const y4m2_parameters *that) {
+  for (unsigned i = 0; i < Y4M2_PARMS; i++) {
+    if (this->parm[i] == NULL && that->parm[i] == NULL)
+      continue;
+    if (this->parm[i] == NULL || that->parm[i] == NULL)
+      return 0;
+    if (strcmp(this->parm[i], that->parm[i]))
+      return 0;
+  }
+  return 1;
+}
+
 static unsigned parse_num(const char *s) {
   if (s) {
     char *ep;
@@ -406,3 +418,12 @@ void y4m2_float_to_frame(const colour_floats *in, y4m2_frame *out) {
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */
+
+
+
+
+
+
+
+
+

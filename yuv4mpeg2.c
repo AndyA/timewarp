@@ -72,13 +72,13 @@ void y4m2_set_parm(y4m2_parameters *parms, const char *name, const char *value) 
 }
 
 int y4m2_equal_parms(const y4m2_parameters *this, const y4m2_parameters *that) {
+  if (this == NULL && that == NULL) return 1;
+  if (this == NULL || that == NULL) return 0;
+
   for (unsigned i = 0; i < Y4M2_PARMS; i++) {
-    if (this->parm[i] == NULL && that->parm[i] == NULL)
-      continue;
-    if (this->parm[i] == NULL || that->parm[i] == NULL)
-      return 0;
-    if (strcmp(this->parm[i], that->parm[i]))
-      return 0;
+    if (this->parm[i] == NULL && that->parm[i] == NULL) continue;
+    if (this->parm[i] == NULL || that->parm[i] == NULL) return 0;
+    if (strcmp(this->parm[i], that->parm[i])) return 0;
   }
   return 1;
 }

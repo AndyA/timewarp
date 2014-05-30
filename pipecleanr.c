@@ -20,7 +20,7 @@ static void callback(y4m2_reason reason,
   output_ctx *oc = (output_ctx *) ctx;
   switch (reason) {
   case Y4M2_START:
-    if (oc->parms == NULL || !y4m2_equal_parms(oc->parms, parms)) {
+    if (!y4m2_equal_parms(oc->parms, parms)) {
       y4m2_free_parms(oc->parms);
       oc->parms = y4m2_clone_parms(parms);
       y4m2_emit_start(oc->out, parms);

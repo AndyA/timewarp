@@ -8,7 +8,7 @@ ACLOCAL_AMFLAGS = -I m4
 
 noinst_LTLIBRARIES = libtimewarp.la
 
-bin_PROGRAMS = timewarp pipecleanr
+bin_PROGRAMS = timewarp pipecleanr y4m2patch
 
 libtimewarp_la_SOURCES = \
 	average.h average.c \
@@ -28,7 +28,6 @@ libtimewarp_la_SOURCES = \
 
 libtimewarp_la_LDFLAGS = -avoid-version -static
 
-
 timewarp_SOURCES = timewarp.c
 
 timewarp_LDADD = libtimewarp.la
@@ -37,7 +36,10 @@ pipecleanr_SOURCES = pipecleanr.c
 
 pipecleanr_LDADD = libtimewarp.la
 
+y4m2patch_SOURCES = y4m2patch.c
+
+y4m2patch_LDADD = libtimewarp.la
+
 
 test: all
 	cd t && $(MAKE) test
-

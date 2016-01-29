@@ -50,6 +50,7 @@
 /test.*
 /timewarp
 /version.h
+/y4m2patch
 Makefile
 Makefile.in
 Session.vim

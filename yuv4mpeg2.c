@@ -8,9 +8,7 @@
 #include "colour.h"
 #include "yuv4mpeg2.h"
 
-static const char *tag[] = {
-  "YUV4MPEG2", "FRAME"
-};
+static const char *tag[] = {"YUV4MPEG2", "FRAME"};
 
 y4m2_parameters *y4m2_new_parms(void) {
   return jd_alloc(sizeof(y4m2_parameters));
@@ -26,18 +24,19 @@ void y4m2_free_parms(y4m2_parameters *parms) {
 }
 
 static void y4m2__set(char **slot, const char *value) {
-  if (*slot) jd_free(*slot);
+  if (*slot)
+    jd_free(*slot);
   if (value) {
     size_t l = strlen(value);
     *slot = jd_alloc(l + 1);
     memcpy(*slot, value, l + 1);
-  }
-  else {
+  } else {
     *slot = NULL;
   }
 }
 
-y4m2_parameters *y4m2_merge_parms(y4m2_parameters *parms, const y4m2_parameters *merge) {
+y4m2_parameters *y4m2_merge_parms(y4m2_parameters *parms,
+                                  const y4m2_parameters *merge) {
   if (merge)
     for (int i = 0; i < Y4M2_PARMS; i++)
       if (merge->parm[i])
@@ -54,7 +53,7 @@ int y4m2__get_index(const char *name) {
     return -1;
   if (strlen(name) != 1 || name[0] < Y4M2_FIRST || name[0] > Y4M2_LAST)
     return -1;
-  return  name[0] - Y4M2_FIRST;
+  return name[0] - Y4M2_FIRST;
 }
 
 const char *y4m2_get_parm(const y4m2_parameters *parms, const char *name) {
@@ -62,7 +61,8 @@ const char *y4m2_get_parm(const y4m2_parameters *parms, const char *name) {
   return idx >= 0 ? parms->parm[idx] : NULL;
 }
 
-void y4m2_set_parm(y4m2_parameters *parms, const char *name, const char *value) {
+void y4m2_set_parm(y4m2_parameters *parms, const char *name,
+                   const char *value) {
   int idx = y4m2__get_index(name);
   if (idx < 0) {
     fprintf(stderr, "Bad parameter name: %s\n", name);
@@ -72,13 +72,18 @@ void y4m2_set_parm(y4m2_parameters *parms, const char *name, const char *value) 
 }
 
 int y4m2_equal_parms(const y4m2_parameters *this, const y4m2_parameters *that) {
-  if (this == NULL && that == NULL) return 1;
-  if (this == NULL || that == NULL) return 0;
+  if (this == NULL && that == NULL)
+    return 1;
+  if (this == NULL || that == NULL)
+    return 0;
 
   for (unsigned i = 0; i < Y4M2_PARMS; i++) {
-    if (this->parm[i] == NULL && that->parm[i] == NULL) continue;
-    if (this->parm[i] == NULL || that->parm[i] == NULL) return 0;
-    if (strcmp(this->parm[i], that->parm[i])) return 0;
+    if (this->parm[i] == NULL && that->parm[i] == NULL)
+      continue;
+    if (this->parm[i] == NULL || that->parm[i] == NULL)
+      return 0;
+    if (strcmp(this->parm[i], that->parm[i]))
+      return 0;
   }
   return 1;
 }
@@ -86,14 +91,17 @@ int y4m2_equal_parms(const y4m2_parameters *this, const y4m2_parameters *that) {
 static unsigned parse_num(const char *s) {
   if (s) {
     char *ep;
-    unsigned n = (unsigned) strtoul(s, &ep, 10);
-    if (ep > s && *ep == '\0') return n;
+    unsigned n = (unsigned)strtoul(s, &ep, 10);
+    if (ep > s && *ep == '\0')
+      return n;
   }
   fprintf(stderr, "Bad number");
   exit(1);
 }
 
-static void set_planes(y4m2_frame_info *info, unsigned xsY, unsigned ysY, unsigned xsCb, unsigned ysCb, unsigned xsCr, unsigned ysCr) {
+static void set_planes(y4m2_frame_info *info, unsigned xsY, unsigned ysY,
+                       unsigned xsCb, unsigned ysCb, unsigned xsCr,
+                       unsigned ysCr) {
   size_t pix_size = info->width * info->height;
 
   info->plane[Y4M2_Y_PLANE].xs = xsY;
@@ -111,25 +119,22 @@ static void set_planes(y4m2_frame_info *info, unsigned xsY, unsigned ysY, unsign
                info->plane[Y4M2_Cr_PLANE].size;
 }
 
-void y4m2_parse_frame_info(y4m2_frame_info *info, const y4m2_parameters *parms) {
+void y4m2_parse_frame_info(y4m2_frame_info *info,
+                           const y4m2_parameters *parms) {
   info->width = parse_num(y4m2_get_parm(parms, "W"));
   info->height = parse_num(y4m2_get_parm(parms, "H"));
 
   const char *cs = y4m2_get_parm(parms, "C");
-  if (!cs) cs = "420";
-  if (!strcmp("420", cs) ||
-      !strcmp("420jpeg", cs) ||
-      !strcmp("420mpeg2", cs) ||
+  if (!cs)
+    cs = "420";
+  if (!strcmp("420", cs) || !strcmp("420jpeg", cs) || !strcmp("420mpeg2", cs) ||
       !strcmp("420paldv", cs)) {
     set_planes(info, 1, 1, 2, 2, 2, 2);
-  }
-  else if (!strcmp("422", cs)) {
+  } else if (!strcmp("422", cs)) {
     set_planes(info, 1, 1, 2, 1, 2, 1);
-  }
-  else if (!strcmp("444", cs)) {
+  } else if (!strcmp("444", cs)) {
     set_planes(info, 1, 1, 1, 1, 1, 1);
-  }
-  else {
+  } else {
     fprintf(stderr, "Unknown colourspace %s\n", cs);
     exit(1);
   }
@@ -177,7 +182,7 @@ void y4m2_free_frame(y4m2_frame *frame) {
 }
 
 y4m2_frame *y4m2_retain_frame(y4m2_frame *frame) {
-  frame->refcnt ++;
+  frame->refcnt++;
   return frame;
 }
 
@@ -196,12 +201,15 @@ static char *is_word(char *buf, const char *match) {
 void y4m2__parse_parms(y4m2_parameters *parms, char *buf) {
   char name[2];
   for (;;) {
-    while (*buf == ' ') buf++;
-    if (*buf < ' ') break;
+    while (*buf == ' ')
+      buf++;
+    if (*buf < ' ')
+      break;
     name[0] = *buf++;
     name[1] = '\0';
     char *vp = buf;
-    while (*buf > ' ') buf++;
+    while (*buf > ' ')
+      buf++;
     char t = *buf;
     *buf = '\0';
     /*    fprintf(stderr,"%s=%s\n",name,vp);*/
@@ -228,12 +236,15 @@ int y4m2_parse(FILE *in, y4m2_output *out) {
     for (;;) {
       if (pos == buf_size) {
         buf_size *= 2;
-        if (buf_size < 1024) buf_size = 1024;
+        if (buf_size < 1024)
+          buf_size = 1024;
         char *nb = realloc(buf, buf_size);
-        if (NULL == nb) abort();
+        if (NULL == nb)
+          abort();
         buf = nb;
       }
-      if (c == EOF) goto done;
+      if (c == EOF)
+        goto done;
       if (c < ' ') {
         buf[pos++] = '\0';
         break;
@@ -241,16 +252,17 @@ int y4m2_parse(FILE *in, y4m2_output *out) {
       buf[pos++] = c;
       c = getc(in);
     }
-    if (c == EOF) break;
+    if (c == EOF)
+      break;
 
     char *tail;
     if (tail = is_word(buf, tag[Y4M2_START]), tail) {
-      if (global) y4m2_free_parms(global);
+      if (global)
+        y4m2_free_parms(global);
       global = y4m2_new_parms();
       y4m2__parse_parms(global, tail);
       y4m2_emit_start(out, global);
-    }
-    else if (tail = is_word(buf, tag[Y4M2_FRAME]), tail) {
+    } else if (tail = is_word(buf, tag[Y4M2_FRAME]), tail) {
       y4m2_parameters *parms = y4m2_new_parms();
       y4m2__parse_parms(parms, tail);
 
@@ -268,8 +280,7 @@ int y4m2_parse(FILE *in, y4m2_output *out) {
       y4m2_release_frame(frame);
       y4m2_free_parms(parms);
       y4m2_free_parms(merged);
-    }
-    else {
+    } else {
       fprintf(stderr, "Bad stream");
       exit(1);
     }
@@ -296,7 +307,8 @@ int y4m2_emit_start(y4m2_output *out, const y4m2_parameters *parms) {
   return 0;
 }
 
-int y4m2_emit_frame(y4m2_output *out, const y4m2_parameters *parms, y4m2_frame *frame) {
+int y4m2_emit_frame(y4m2_output *out, const y4m2_parameters *parms,
+                    y4m2_frame *frame) {
   switch (out->type) {
   case Y4M2_OUTPUT_FILE:
     fputs(tag[Y4M2_FRAME], out->o.f);
@@ -338,18 +350,16 @@ y4m2_output *y4m2_output_next(y4m2_callback cb, void *ctx) {
   return o;
 }
 
-void y4m2_free_output(y4m2_output *out) {
-  jd_free(out);
-}
+void y4m2_free_output(y4m2_output *out) { jd_free(out); }
 
 static unsigned y4m2__log2(unsigned x) {
   unsigned shift = 0;
-  while (x > (1 << shift)) shift++;
+  while (x > (1 << shift))
+    shift++;
   return shift;
 }
 
-static void y4m2__plane_map(const y4m2_frame *in,
-                            uint8_t *plane[Y4M2_N_PLANE],
+static void y4m2__plane_map(const y4m2_frame *in, uint8_t *plane[Y4M2_N_PLANE],
                             unsigned xs[Y4M2_N_PLANE],
                             unsigned ys[Y4M2_N_PLANE]) {
   uint8_t *bp = in->buf;
@@ -376,7 +386,7 @@ size_t y4m2_frame_to_float(const y4m2_frame *in, colour_floats *out) {
     for (unsigned y = 0; y < height; y++) {
       for (unsigned x = 0; x < width; x++) {
         out[y * width + x].c[p] =
-          plane[p][(y >> ys[p]) * (width >> xs[p]) + (x >> xs[p])];
+            plane[p][(y >> ys[p]) * (width >> xs[p]) + (x >> xs[p])];
       }
     }
   }
@@ -408,8 +418,10 @@ void y4m2_float_to_frame(const colour_floats *in, y4m2_frame *out) {
             sum += in[((y << ys[p]) + yy) * width + (x << xs[p]) + xx].c[p];
 
         double sample = sum / area;
-        if (sample < 0) sample = 0;
-        if (sample > 255) sample = 255;
+        if (sample < 0)
+          sample = 0;
+        if (sample > 255)
+          sample = 255;
         plane[p][y * plw + x] = (uint8_t)sample;
       }
     }
@@ -418,12 +430,3 @@ void y4m2_float_to_frame(const colour_floats *in, y4m2_frame *out) {
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */
-
-
-
-
-
-
-
-
-

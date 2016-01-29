@@ -1,22 +1,20 @@
 /* filter.c */
 
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <jd_pretty.h>
 
 #include "filter.h"
+#include "model.h"
 #include "streak.h"
 #include "stretch.h"
-#include "model.h"
 #include "yuv4mpeg2.h"
 
 static jd_var filters = JD_INIT;
 
-static void filter__teardown(void) {
-  jd_release(&filters);
-}
+static void filter__teardown(void) { jd_release(&filters); }
 
 void filter_init(void) {
   jd_set_hash(&filters, 10);
@@ -39,15 +37,11 @@ static void filter__free(filter *filt) {
   jd_free(filt);
 }
 
-static void filter__free_cb(void *f) {
-  filter__free(f);
-}
+static void filter__free_cb(void *f) { filter__free(f); }
 
-static void filter__callback(y4m2_reason reason,
-                             const y4m2_parameters *parms,
-                             y4m2_frame *frame,
-                             void *ctx) {
-  filter *filt = (filter *) ctx;
+static void filter__callback(y4m2_reason reason, const y4m2_parameters *parms,
+                             y4m2_frame *frame, void *ctx) {
+  filter *filt = (filter *)ctx;
   switch (reason) {
   case Y4M2_START:
     if (filt->start)
@@ -70,10 +64,12 @@ static void filter__callback(y4m2_reason reason,
   }
 }
 
-static y4m2_output *filter__hook(jd_var *stash, const char *name, y4m2_output *out) {
-  (void) stash;
+static y4m2_output *filter__hook(jd_var *stash, const char *name,
+                                 y4m2_output *out) {
+  (void)stash;
   jd_var *fp = jd_get_ks(&filters, name, 0);
-  if (!fp) jd_throw("Unknown filter \"%s\"", name);
+  if (!fp)
+    jd_throw("Unknown filter \"%s\"", name);
 
   filter *filt = filter__clone(jd_ptr(fp));
   filt->ctx = NULL;
@@ -104,11 +100,9 @@ static void filter__control_free(filter__control *fc) {
   jd_free(fc);
 }
 
-static void filter__control_cb(y4m2_reason reason,
-                               const y4m2_parameters *parms,
-                               y4m2_frame *frame,
-                               void *ctx) {
-  filter__control *fc = (filter__control *) ctx;
+static void filter__control_cb(y4m2_reason reason, const y4m2_parameters *parms,
+                               y4m2_frame *frame, void *ctx) {
+  filter__control *fc = (filter__control *)ctx;
   switch (reason) {
   case Y4M2_START:
     y4m2_emit_start(fc->out, parms);
@@ -139,7 +133,7 @@ y4m2_output *filter_build(jd_var *stash, y4m2_output *out, jd_var *model) {
     jd_var *config = model_multi_load(jd_nv(), model);
     size_t nfilt = jd_count(config);
     jd_var *list = jd_set_array(jd_get_ks(stash, "list", 1), nfilt);
-    for (int i = (int) nfilt; --i >= 0;) {
+    for (int i = (int)nfilt; --i >= 0;) {
       jd_var *opt = jd_get_idx(config, i);
       const char *name = jd_bytes(jd_rv(opt, "$.filter"), NULL);
       prev = filter__hook(list, name, prev);

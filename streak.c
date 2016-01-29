@@ -1,8 +1,8 @@
 /* streak.c */
 
+#include <math.h>
 #include <stdint.h>
 #include <string.h>
-#include <math.h>
 
 #include <jd_pretty.h>
 
@@ -24,15 +24,18 @@ static void streak__free(streak__work *wrk) {
 }
 
 static void streak__start(filter *filt, const y4m2_parameters *parms) {
-  if (!filt->ctx) filt->ctx = jd_alloc(sizeof(streak__work));
+  if (!filt->ctx)
+    filt->ctx = jd_alloc(sizeof(streak__work));
   y4m2_emit_start(filt->out, parms);
 }
 
-static void streak__frame(filter *filt, const y4m2_parameters *parms, y4m2_frame *frame) {
+static void streak__frame(filter *filt, const y4m2_parameters *parms,
+                          y4m2_frame *frame) {
   streak__work *wrk = filt->ctx;
   double decay = model_get_real(&filt->config, 0, "$.options.decay");
 
-  if (!wrk->acc) wrk->acc = jd_alloc(frame->i.size * sizeof(double));
+  if (!wrk->acc)
+    wrk->acc = jd_alloc(frame->i.size * sizeof(double));
 
   for (unsigned i = 0; i < frame->i.size; i++) {
     wrk->acc[i] = wrk->acc[i] * decay + frame->buf[i];
@@ -51,10 +54,7 @@ static void streak__end(filter *filt) {
 
 void streak_register(void) {
   filter f = {
-    .start = streak__start,
-    .frame = streak__frame,
-    .end = streak__end
-  };
+      .start = streak__start, .frame = streak__frame, .end = streak__end};
   filter_register("streak", &f);
 }
 

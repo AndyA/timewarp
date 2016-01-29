@@ -9,10 +9,8 @@
 
 typedef struct filter filter;
 
-typedef void (*filter_cb_start)(filter *filt,
-                                const y4m2_parameters *parms);
-typedef void (*filter_cb_frame)(filter *filt,
-                                const y4m2_parameters *parms,
+typedef void (*filter_cb_start)(filter *filt, const y4m2_parameters *parms);
+typedef void (*filter_cb_frame)(filter *filt, const y4m2_parameters *parms,
                                 y4m2_frame *frame);
 typedef void (*filter_cb_end)(filter *filt);
 

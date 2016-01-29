@@ -33,11 +33,13 @@ static void merge__scale(y4m2_frame *frame, uint32_t *avg, unsigned scale) {
 }
 
 static void merge__start(filter *filt, const y4m2_parameters *parms) {
-  if (!filt->ctx) filt->ctx = jd_alloc(sizeof(merge__work));
+  if (!filt->ctx)
+    filt->ctx = jd_alloc(sizeof(merge__work));
   y4m2_emit_start(filt->out, parms);
 }
 
-static void merge__frame(filter *filt, const y4m2_parameters *parms, y4m2_frame *frame) {
+static void merge__frame(filter *filt, const y4m2_parameters *parms,
+                         y4m2_frame *frame) {
   merge__work *wrk = filt->ctx;
   unsigned frames = model_get_int(&filt->config, 10, "$.options.frames");
   if (!wrk->avg)
@@ -57,11 +59,7 @@ static void merge__end(filter *filt) {
 }
 
 void merge_register(void) {
-  filter f = {
-    .start = merge__start,
-    .frame = merge__frame,
-    .end = merge__end
-  };
+  filter f = {.start = merge__start, .frame = merge__frame, .end = merge__end};
   filter_register("merge", &f);
 }
 

@@ -13,7 +13,8 @@
 jd_var *model_vget(jd_var *v, jd_var *fallback, const char *path, va_list ap) {
   scope {
     jd_var *slot = jd_get_context(v, jd_vsprintf(jd_nv(), path, ap), 0);
-    if (slot) JD_RETURN(slot);
+    if (slot)
+      JD_RETURN(slot);
   }
   return fallback;
 }
@@ -67,7 +68,8 @@ jd_var *model_load_json(jd_var *out, FILE *f) {
 
 jd_var *model_load_file(jd_var *out, const char *fn) {
   FILE *fl = fopen(fn, "r");
-  if (!fl) jd_throw("Can't read %s: %m\n", fn);
+  if (!fl)
+    jd_throw("Can't read %s: %m\n", fn);
   jd_var *v = model_load_json(out, fl);
   fclose(fl);
   return v;
@@ -82,7 +84,8 @@ jd_var *model_load(jd_var *stash) {
   struct stat st;
   const char *name = jd_bytes(jd_get_ks(stash, "name", 0), NULL);
   jd_var *lm = jd_get_ks(stash, "last_modified", 1);
-  if (stat(name, &st)) jd_throw("Can't stat %s: %m", name);
+  if (stat(name, &st))
+    jd_throw("Can't stat %s: %m", name);
   if (!lm || jd_get_int(lm) < st.st_mtime) {
     /*    jd_fprintf(stderr, "loading %s\n", name);*/
     model_load_file(jd_get_ks(stash, "model", 1), name);

@@ -1,8 +1,8 @@
 /* massive.c */
 
+#include <math.h>
 #include <stdint.h>
 #include <string.h>
-#include <math.h>
 
 #include <jd_pretty.h>
 
@@ -50,7 +50,8 @@ static void massive__free(massive__work *wrk) {
 }
 
 static void massive__setup(y4m2_frame *frame, massive__work *wrk) {
-  massive__datum *dp = wrk->data = jd_alloc(frame->i.size * sizeof(massive__datum));
+  massive__datum *dp = wrk->data =
+      jd_alloc(frame->i.size * sizeof(massive__datum));
   uint8_t *fp = frame->buf;
 
   for (unsigned p = 0; p < Y4M2_N_PLANE; p++) {
@@ -61,7 +62,7 @@ static void massive__setup(y4m2_frame *frame, massive__work *wrk) {
   }
 }
 
-static const char *plane_key[] = { "Y", "Cb", "Cr" };
+static const char *plane_key[] = {"Y", "Cb", "Cr"};
 
 static void massive__config_plane(massive__plane *p, jd_var *opt) {
   p->disabled = model_get_int(opt, 0, "$.disabled");
@@ -88,14 +89,17 @@ static void massive__config_parse(massive__plane *pl, jd_var *opt) {
 }
 
 static void massive__start(filter *filt, const y4m2_parameters *parms) {
-  if (!filt->ctx) filt->ctx = jd_alloc(sizeof(massive__work));
+  if (!filt->ctx)
+    filt->ctx = jd_alloc(sizeof(massive__work));
   y4m2_emit_start(filt->out, parms);
 }
 
-static void massive__frame(filter *filt, const y4m2_parameters *parms, y4m2_frame *frame) {
+static void massive__frame(filter *filt, const y4m2_parameters *parms,
+                           y4m2_frame *frame) {
   massive__work *wrk = filt->ctx;
   massive__plane plane[Y4M2_N_PLANE];
-  if (!wrk->data) massive__setup(frame, wrk);
+  if (!wrk->data)
+    massive__setup(frame, wrk);
   massive__config_parse(plane, &filt->config);
 
   if (wrk->prev) {
@@ -108,8 +112,7 @@ static void massive__frame(filter *filt, const y4m2_parameters *parms, y4m2_fram
         dp += frame->i.plane[p].size;
         fp += frame->i.plane[p].size;
         pp += frame->i.plane[p].size;
-      }
-      else {
+      } else {
         double min = (p == Y4M2_Y_PLANE) ? 16 : 16;
         double max = (p == Y4M2_Y_PLANE) ? 235 : 240;
         double drag = plane[p].drag;
@@ -124,28 +127,31 @@ static void massive__frame(filter *filt, const y4m2_parameters *parms, y4m2_fram
         int do_rms = fwd_weight != 0 || inv_weight != 1;
 
         for (unsigned i = 0; i < frame->i.plane[p].size; i++) {
-          double local_mass = mass +
-                              (*fp * fwd_mass) +
-                              ((255 - *fp) * inv_mass);
+          double local_mass =
+              mass + (*fp * fwd_mass) + ((255 - *fp) * inv_mass);
 
           if (do_rms) {
             dp->average = average_next(&plane[p].average, dp->average, *fp);
             double dy = *fp - dp->average;
-            double rms = sqrt(dp->rms = average_next(
-                                          &plane[p].rms_acc, dp->rms, dy * dy));
-            if (rms < SIGMA) rms = SIGMA;
+            double rms = sqrt(
+                dp->rms = average_next(&plane[p].rms_acc, dp->rms, dy * dy));
+            if (rms < SIGMA)
+              rms = SIGMA;
             local_mass += (fwd_weight * rms) + (inv_weight / rms);
           }
 
-          if (local_mass < SIGMA) local_mass = SIGMA;
+          if (local_mass < SIGMA)
+            local_mass = SIGMA;
 
           double force = (*fp - dp->position) * attraction -
                          (dp->velocity * fabs(dp->velocity) * drag);
           dp->velocity += force / local_mass;
           double sample = dp->position += dp->velocity;
-          if (sample < min) sample = min;
-          if (sample > max) sample = max;
-          *pp++ = mix * (uint8_t) sample + (1 - mix) * *fp++;
+          if (sample < min)
+            sample = min;
+          if (sample > max)
+            sample = max;
+          *pp++ = mix * (uint8_t)sample + (1 - mix) * *fp++;
           dp++;
         }
 
@@ -159,8 +165,7 @@ static void massive__frame(filter *filt, const y4m2_parameters *parms, y4m2_fram
     wrk->prev->sequence = frame->sequence;
     y4m2_emit_frame(filt->out, parms, wrk->prev);
     y4m2_release_frame(wrk->prev);
-  }
-  else {
+  } else {
     y4m2_emit_frame(filt->out, parms, frame);
   }
 
@@ -174,10 +179,7 @@ static void massive__end(filter *filt) {
 
 void massive_register(void) {
   filter f = {
-    .start = massive__start,
-    .frame = massive__frame,
-    .end = massive__end
-  };
+      .start = massive__start, .frame = massive__frame, .end = massive__end};
   filter_register("massive", &f);
 }
 

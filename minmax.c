@@ -15,17 +15,20 @@ typedef struct {
 
 static void minmax__free(minmax__work *wrk) {
   if (wrk) {
-    if (wrk->acc) y4m2_release_frame(wrk->acc);
+    if (wrk->acc)
+      y4m2_release_frame(wrk->acc);
     jd_free(wrk);
   }
 }
 
 static void minmax__start(filter *filt, const y4m2_parameters *parms) {
-  if (!filt->ctx) filt->ctx = jd_alloc(sizeof(minmax__work));
+  if (!filt->ctx)
+    filt->ctx = jd_alloc(sizeof(minmax__work));
   y4m2_emit_start(filt->out, parms);
 }
 
-static void minmax__frame(filter *filt, const y4m2_parameters *parms, y4m2_frame *frame) {
+static void minmax__frame(filter *filt, const y4m2_parameters *parms,
+                          y4m2_frame *frame) {
   minmax__work *wrk = filt->ctx;
   unsigned frames = model_get_int(&filt->config, 10, "$.options.frames");
   unsigned min = model_get_int(&filt->config, 0, "$.options.min");
@@ -36,15 +39,13 @@ static void minmax__frame(filter *filt, const y4m2_parameters *parms, y4m2_frame
         if (frame->buf[i] < wrk->acc->buf[i])
           wrk->acc->buf[i] = frame->buf[i];
       }
-    }
-    else {
+    } else {
       for (unsigned i = 0; i < frame->i.size; i++) {
         if (frame->buf[i] > wrk->acc->buf[i])
           wrk->acc->buf[i] = frame->buf[i];
       }
     }
-  }
-  else {
+  } else {
     wrk->acc = y4m2_retain_frame(frame);
   }
 
@@ -64,10 +65,7 @@ static void minmax__end(filter *filt) {
 
 void minmax_register(void) {
   filter f = {
-    .start = minmax__start,
-    .frame = minmax__frame,
-    .end = minmax__end
-  };
+      .start = minmax__start, .frame = minmax__frame, .end = minmax__end};
   filter_register("minmax", &f);
 }
 

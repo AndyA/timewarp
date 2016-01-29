@@ -1,20 +1,18 @@
 /* stretch.c */
 
+#include <math.h>
 #include <stdint.h>
 #include <string.h>
-#include <math.h>
 
 #include <jd_pretty.h>
 
 #include "average.h"
 #include "filter.h"
-#include "stretch.h"
 #include "model.h"
+#include "stretch.h"
 #include "yuv4mpeg2.h"
 
-typedef struct {
-  y4m2_frame *prev, *tmp;
-} stretch__work;
+typedef struct { y4m2_frame *prev, *tmp; } stretch__work;
 
 static void stretch__free(stretch__work *wrk) {
   if (wrk) {
@@ -25,16 +23,19 @@ static void stretch__free(stretch__work *wrk) {
 }
 
 static void stretch__start(filter *filt, const y4m2_parameters *parms) {
-  if (!filt->ctx) filt->ctx = jd_alloc(sizeof(stretch__work));
+  if (!filt->ctx)
+    filt->ctx = jd_alloc(sizeof(stretch__work));
   y4m2_emit_start(filt->out, parms);
 }
 
-static void stretch__frame(filter *filt, const y4m2_parameters *parms, y4m2_frame *frame) {
+static void stretch__frame(filter *filt, const y4m2_parameters *parms,
+                           y4m2_frame *frame) {
   stretch__work *wrk = filt->ctx;
   unsigned frames = model_get_int(&filt->config, 10, "$.options.frames");
 
   if (wrk->prev) {
-    if (!wrk->tmp) wrk->tmp = y4m2_like_frame(frame);
+    if (!wrk->tmp)
+      wrk->tmp = y4m2_like_frame(frame);
 
     for (unsigned phase = 0; phase < frames; phase++) {
       uint8_t *fp = frame->buf;
@@ -52,8 +53,7 @@ static void stretch__frame(filter *filt, const y4m2_parameters *parms, y4m2_fram
     }
 
     y4m2_release_frame(wrk->prev);
-  }
-  else {
+  } else {
     y4m2_emit_frame(filt->out, parms, frame);
   }
 
@@ -67,13 +67,9 @@ static void stretch__end(filter *filt) {
 
 void stretch_register(void) {
   filter f = {
-    .start = stretch__start,
-    .frame = stretch__frame,
-    .end = stretch__end
-  };
+      .start = stretch__start, .frame = stretch__frame, .end = stretch__end};
   filter_register("stretch", &f);
 }
-
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */

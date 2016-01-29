@@ -1,8 +1,8 @@
 /* pipecleanr.c */
 
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <jd_pretty.h>
 
@@ -13,11 +13,9 @@ typedef struct {
   y4m2_output *out;
 } output_ctx;
 
-static void callback(y4m2_reason reason,
-                     const y4m2_parameters *parms,
-                     y4m2_frame *frame,
-                     void *ctx) {
-  output_ctx *oc = (output_ctx *) ctx;
+static void callback(y4m2_reason reason, const y4m2_parameters *parms,
+                     y4m2_frame *frame, void *ctx) {
+  output_ctx *oc = (output_ctx *)ctx;
   switch (reason) {
   case Y4M2_START:
     if (!y4m2_equal_parms(oc->parms, parms)) {
@@ -50,23 +48,3 @@ int main(void) {
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

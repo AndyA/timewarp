@@ -10,13 +10,11 @@
 
 #define Y4M2_FIRST 'A'
 #define Y4M2_LAST 'Z'
-#define Y4M2_PARMS (Y4M2_LAST-Y4M2_FIRST+1)
+#define Y4M2_PARMS (Y4M2_LAST - Y4M2_FIRST + 1)
 
-typedef struct {
-  char *parm[Y4M2_PARMS];
-} y4m2_parameters;
+typedef struct { char *parm[Y4M2_PARMS]; } y4m2_parameters;
 
-enum {Y4M2_Y_PLANE, Y4M2_Cb_PLANE, Y4M2_Cr_PLANE, Y4M2_N_PLANE};
+enum { Y4M2_Y_PLANE, Y4M2_Cb_PLANE, Y4M2_Cr_PLANE, Y4M2_N_PLANE };
 
 typedef struct {
   unsigned width;
@@ -38,10 +36,8 @@ typedef struct {
 
 typedef enum { Y4M2_START, Y4M2_FRAME, Y4M2_END } y4m2_reason;
 
-typedef void (*y4m2_callback)(y4m2_reason reason,
-                              const y4m2_parameters *parms,
-                              y4m2_frame *frame,
-                              void *ctx);
+typedef void (*y4m2_callback)(y4m2_reason reason, const y4m2_parameters *parms,
+                              y4m2_frame *frame, void *ctx);
 
 typedef struct {
   enum { Y4M2_OUTPUT_FILE, Y4M2_OUTPUT_NEXT } type;
@@ -59,7 +55,8 @@ void y4m2__format_parms(FILE *out, const y4m2_parameters *parms);
 
 y4m2_parameters *y4m2_new_parms(void);
 void y4m2_free_parms(y4m2_parameters *parms);
-y4m2_parameters *y4m2_merge_parms(y4m2_parameters *parms, const y4m2_parameters *merge);
+y4m2_parameters *y4m2_merge_parms(y4m2_parameters *parms,
+                                  const y4m2_parameters *merge);
 y4m2_parameters *y4m2_clone_parms(const y4m2_parameters *orig);
 const char *y4m2_get_parm(const y4m2_parameters *parms, const char *name);
 void y4m2_set_parm(y4m2_parameters *parm, const char *name, const char *value);
@@ -74,7 +71,8 @@ y4m2_frame *y4m2_retain_frame(y4m2_frame *frame);
 void y4m2_release_frame(y4m2_frame *frame);
 int y4m2_parse(FILE *in, y4m2_output *out);
 int y4m2_emit_start(y4m2_output *out, const y4m2_parameters *parms);
-int y4m2_emit_frame(y4m2_output *out, const y4m2_parameters *parms, y4m2_frame *frame);
+int y4m2_emit_frame(y4m2_output *out, const y4m2_parameters *parms,
+                    y4m2_frame *frame);
 int y4m2_emit_end(y4m2_output *out);
 y4m2_output *y4m2_output_file(FILE *out);
 y4m2_output *y4m2_output_next(y4m2_callback cb, void *ctx);

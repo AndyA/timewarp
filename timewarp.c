@@ -1,8 +1,8 @@
 /* timewarp.c */
 
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <jd_pretty.h>
 
@@ -40,12 +40,11 @@ static jd_var *build_model(jd_var *out, int nc, char *cfg[]) {
   return out;
 }
 
-static void help(void) {
-  printf("Syntax: timewarp <config file>...\n");
-}
+static void help(void) { printf("Syntax: timewarp <config file>...\n"); }
 
 int main(int argc, char *argv[]) {
-  if (argc == 1 || (argc == 2 && (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help")))) {
+  if (argc == 1 ||
+      (argc == 2 && (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help")))) {
     help();
     return 1;
   }

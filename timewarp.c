@@ -13,6 +13,7 @@
 #include "minmax.h"
 #include "model.h"
 #include "peak.h"
+#include "ripple.h"
 #include "streak.h"
 #include "stretch.h"
 #include "yuv4mpeg2.h"
@@ -26,6 +27,7 @@ static void setup(void) {
   merge_register();
   minmax_register();
   peak_register();
+  ripple_register();
   streak_register();
   stretch_register();
 }

@@ -24,6 +24,7 @@ libtimewarp_la_SOURCES = \
 	peak.h peak.c \
 	streak.h streak.c \
 	stretch.h stretch.c \
+	ripple.h ripple.c \
 	yuv4mpeg2.h yuv4mpeg2.c
 
 libtimewarp_la_LDFLAGS = -avoid-version -static

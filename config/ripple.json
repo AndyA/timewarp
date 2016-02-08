@@ -2,7 +2,7 @@
   "filter": "ripple",
   "options": {
     "generator": "pond",
-    "frequency": 100,
+    "frequency": 150,
     "amplitude": 10,
     "centre_x": 0.5,
     "centre_y": 0.5

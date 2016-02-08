@@ -16,6 +16,7 @@ typedef struct {
   size_t hist_size;
   y4m2_frame **history;
   y4m2_frame *buf;
+  y4m2_parameters *parms;
 } ripple__work;
 
 typedef void (*ripple__generator)(filter *filt, const y4m2_frame *frame,
@@ -47,7 +48,6 @@ static void ripple__resample(double *out, const double *in, unsigned width,
 
 static void ripple__pond(filter *filt, const y4m2_frame *frame, double *delay) {
   double frequency = model_get_real(&filt->config, 10, "$.options.frequency");
-  double amplitude = model_get_real(&filt->config, 10, "$.options.amplitude");
 
   double cx = (double)frame->i.width *
               model_get_real(&filt->config, 0.5, "$.options.centre_x");
@@ -59,8 +59,7 @@ static void ripple__pond(filter *filt, const y4m2_frame *frame, double *delay) {
       double dx = x - cx;
       double dy = y - cy;
       delay[x + frame->i.width * y] =
-          (sin(sqrt(dx * dx + dy * dy) * 2 * M_PI / frequency) + 1) / 2 *
-          amplitude;
+          sin(sqrt(dx * dx + dy * dy) * 2 * M_PI / frequency);
     }
   }
 }
@@ -73,12 +72,11 @@ static struct {
 static void ripple__free(ripple__work *wrk) {
   if (wrk) {
     jd_free(wrk->delay);
-    for (unsigned i = 0; i < wrk->hist_size; i++) {
-      if (wrk->history[i])
-        y4m2_release_frame(wrk->history[i]);
-    }
+    for (unsigned i = 0; i < wrk->hist_size; i++)
+      y4m2_release_frame(wrk->history[i]);
     jd_free(wrk->history);
     y4m2_release_frame(wrk->buf);
+    y4m2_free_parms(wrk->parms);
     jd_free(wrk);
   }
 }
@@ -115,6 +113,7 @@ static void ripple__build(filter *filt, const y4m2_parameters *parms,
 
   wrk->delay = jd_alloc(sizeof(double) * frame->i.size);
 
+  double amplitude = model_get_real(&filt->config, 10, "$.options.amplitude");
   jd_var *gv = model_get(&filt->config, NULL, "$.options.generator");
 
   if (!gv) {
@@ -143,18 +142,21 @@ static void ripple__build(filter *filt, const y4m2_parameters *parms,
   /* find min, max delay */
   double min, max;
   ripple__minmax(wrk->delay, frame->i.size, &min, &max);
+  double scale = amplitude / (max - min);
 
   /* offset all delays */
   for (unsigned i = 0; i < frame->i.size; i++) {
-    wrk->delay[i] -= min;
+    wrk->delay[i] = (wrk->delay[i] - min) * scale;
   }
 
   /* allocate frame stores */
-  wrk->hist_size = (size_t)(max - min + 2);
+  wrk->hist_size = (size_t)(amplitude + 2);
   wrk->history = jd_alloc(sizeof(y4m2_frame *) * wrk->hist_size);
 
   /* work buffer */
   wrk->buf = y4m2_like_frame(frame);
+
+  wrk->parms = y4m2_clone_parms(parms);
 }
 
 static void ripple__start(filter *filt, const y4m2_parameters *parms) {
@@ -198,10 +200,13 @@ static void ripple__frame(filter *filt, const y4m2_parameters *parms,
       *outp++ = s0 * w0 + s1 * w1;
     }
   }
-  y4m2_emit_frame(filt->out, parms, wrk->buf);
+  y4m2_emit_frame(filt->out, wrk->parms, wrk->buf);
 }
 
 static void ripple__end(filter *filt) {
+  ripple__work *wrk = filt->ctx;
+  for (unsigned i = 0; i < wrk->hist_size; i++)
+    ripple__frame(filt, NULL, NULL);
   y4m2_emit_end(filt->out);
   ripple__free(filt->ctx);
 }

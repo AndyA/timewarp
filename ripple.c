@@ -64,10 +64,28 @@ static void ripple__pond(filter *filt, const y4m2_frame *frame, double *delay) {
   }
 }
 
+static void ripple__radius(filter *filt, const y4m2_frame *frame,
+                           double *delay) {
+
+  double cx = (double)frame->i.width *
+              model_get_real(&filt->config, 0.5, "$.options.centre_x");
+  double cy = (double)frame->i.height *
+              model_get_real(&filt->config, 0.5, "$.options.centre_y");
+
+  for (unsigned y = 0; y < frame->i.height; y++) {
+    for (unsigned x = 0; x < frame->i.width; x++) {
+      double dx = x - cx;
+      double dy = y - cy;
+      delay[x + frame->i.width * y] = sqrt(dx * dx + dy * dy);
+    }
+  }
+}
+
 static struct {
   const char *name;
   ripple__generator gen;
-} generators[] = {{.name = "pond", .gen = ripple__pond}};
+} generators[] = {{.name = "pond", .gen = ripple__pond},
+                  {.name = "radius", .gen = ripple__radius}};
 
 static void ripple__free(ripple__work *wrk) {
   if (wrk) {

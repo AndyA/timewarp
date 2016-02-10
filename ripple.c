@@ -81,11 +81,27 @@ static void ripple__radius(filter *filt, const y4m2_frame *frame,
   }
 }
 
+static void ripple__ramp(filter *filt, const y4m2_frame *frame, double *delay) {
+
+  double angle =
+      model_get_real(&filt->config, 0, "$.options.angle") * M_PI / 180.0;
+
+  double sa = sin(angle);
+  double ca = cos(angle);
+
+  for (unsigned y = 0; y < frame->i.height; y++) {
+    for (unsigned x = 0; x < frame->i.width; x++) {
+      delay[x + frame->i.width * y] = x * ca - y * sa;
+    }
+  }
+}
+
 static struct {
   const char *name;
   ripple__generator gen;
 } generators[] = {{.name = "pond", .gen = ripple__pond},
-                  {.name = "radius", .gen = ripple__radius}};
+                  {.name = "radius", .gen = ripple__radius},
+                  {.name = "ramp", .gen = ripple__ramp}};
 
 static void ripple__free(ripple__work *wrk) {
   if (wrk) {

@@ -149,6 +149,7 @@ static void ripple__build(filter *filt, const y4m2_parameters *parms,
 
   double amplitude = model_get_real(&filt->config, 10, "$.options.amplitude");
   jd_var *gv = model_get(&filt->config, NULL, "$.options.generator");
+  int invert = model_get_int(&filt->config, 0, "$.options.invert");
 
   if (!gv) {
     fprintf(stderr, "Missing 'generator' in config");
@@ -175,7 +176,12 @@ static void ripple__build(filter *filt, const y4m2_parameters *parms,
 
   /* find min, max delay */
   double min, max;
-  ripple__minmax(wrk->delay, frame->i.size, &min, &max);
+
+  if (invert)
+    ripple__minmax(wrk->delay, frame->i.size, &max, &min);
+  else
+    ripple__minmax(wrk->delay, frame->i.size, &min, &max);
+
   double scale = amplitude / (max - min);
 
   /* offset all delays */

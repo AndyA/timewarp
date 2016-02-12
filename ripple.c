@@ -213,8 +213,7 @@ static void ripple__frame(filter *filt, const y4m2_parameters *parms,
   ripple__work *wrk = filt->ctx;
 
   /* clock in a new frame */
-  if (wrk->history[wrk->hist_size - 1])
-    y4m2_release_frame(wrk->history[wrk->hist_size - 1]);
+  y4m2_release_frame(wrk->history[wrk->hist_size - 1]);
   memmove(&wrk->history[1], &wrk->history[0],
           sizeof(y4m2_frame *) * (wrk->hist_size - 1));
   wrk->history[0] = y4m2_retain_frame(frame);
@@ -223,7 +222,8 @@ static void ripple__frame(filter *filt, const y4m2_parameters *parms,
   const double *delp = wrk->delay;
   uint8_t *outp = wrk->buf->buf;
   for (unsigned pl = 0; pl < Y4M2_N_PLANE; pl++) {
-    for (unsigned i = 0; i < frame->i.plane[pl].size; i++) {
+    size_t size = wrk->buf->i.plane[pl].size;
+    for (unsigned i = 0; i < size; i++) {
       double del = *delp++;
       unsigned index = (unsigned)del;
       double w1 = del - index;

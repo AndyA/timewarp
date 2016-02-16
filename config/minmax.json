@@ -1,9 +1,9 @@
-[
-   {
-      "filter" : "minmax",
-      "options" : {
-         "frames" : 10,
-         "min" : false
-      }
-   }
-]
+[{
+  "filter": "minmax",
+  "options": {
+    "frames": 10,
+    "min": 0.5,
+    "max": 0.5,
+    "average": 0
+  }
+}]

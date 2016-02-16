@@ -168,7 +168,6 @@ y4m2_frame *y4m2_like_frame(const y4m2_frame *frame) {
 }
 
 y4m2_frame *y4m2_clone_frame(const y4m2_frame *frame) {
-
   y4m2_frame *nf = y4m2_like_frame(frame);
   memcpy(nf->buf, frame->buf, frame->i.size);
   return nf;

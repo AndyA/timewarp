@@ -73,8 +73,9 @@ static void minmax__frame(filter *filt, const y4m2_parameters *parms,
   if (++wrk->phase == frames) {
     wrk->tmp->sequence = frame->sequence;
     for (unsigned i = 0; i < wrk->tmp->i.size; i++) {
-      double sample =
-          wrk->min->buf[i] * min + wrk->max->buf[i] * max + wrk->avg[i] * avg;
+      double sample = (double)wrk->min->buf[i] * min +
+                      (double)wrk->max->buf[i] * max +
+                      (double)wrk->avg[i] * avg;
       if (sample > 255)
         sample = 255;
       if (sample < 0)

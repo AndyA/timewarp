@@ -1,15 +1,18 @@
-[{
-  "filter": "merge",
-  "options": {
-    "frames": 5
-  }
-}, {
-  "filter": "ripple",
-  "options": {
-    "generator": "pond",
-    "frequency": 100,
-    "amplitude": 10,
-    "centre_x": 0.5,
-    "centre_y": 0.5
-  }
-}]
+[
+   {
+      "filter" : "ripple",
+      "options" : {
+         "amplitude" : 100,
+         "centre_x" : 0.5,
+         "centre_y" : 0.5,
+         "frequency" : 150,
+         "generator" : "pond"
+      }
+   },
+   {
+      "filter" : "merge",
+      "options" : {
+         "frames" : 20
+      }
+   }
+]

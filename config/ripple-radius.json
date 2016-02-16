@@ -1,0 +1,12 @@
+[
+   {
+      "filter" : "ripple",
+      "options" : {
+         "amplitude" : 10,
+         "centre_x" : 0.3,
+         "centre_y" : 0.76,
+         "frequency" : 300,
+         "generator" : "pond"
+      }
+   }
+]

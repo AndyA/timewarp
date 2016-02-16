@@ -1,0 +1,16 @@
+[
+   {
+      "filter" : "ripple",
+      "options" : {
+         "amplitude" : 50,
+         "angle" : 90,
+         "generator" : "ramp"
+      }
+   },
+   {
+      "filter" : "merge",
+      "options" : {
+         "frames" : 4
+      }
+   }
+]

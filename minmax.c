@@ -29,11 +29,8 @@ static void minmax__free(minmax__work *wrk) {
 }
 
 static void minmax__start(filter *filt, const y4m2_parameters *parms) {
-  if (!filt->ctx) {
-    unsigned buckets = model_get_int(&filt->config, 1, "$.options.buckets");
-    minmax__work *wrk = jd_alloc(sizeof(minmax__work));
-    filt->ctx = wrk;
-  }
+  if (!filt->ctx)
+    filt->ctx = jd_alloc(sizeof(minmax__work));
   y4m2_emit_start(filt->out, parms);
 }
 

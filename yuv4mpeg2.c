@@ -11,6 +11,8 @@
 static const char *tag[] = {"YUV4MPEG2", "FRAME"};
 
 uint8_t y4m2_fill[Y4M2_N_PLANE] = {16, 128, 128};
+uint8_t y4m2_min[Y4M2_N_PLANE] = {16, 16, 16};
+uint8_t y4m2_max[Y4M2_N_PLANE] = {235, 240, 240};
 
 y4m2_parameters *y4m2_new_parms(void) {
   return jd_alloc(sizeof(y4m2_parameters));

@@ -39,9 +39,13 @@ static void minmax__frame(filter *filt, const y4m2_parameters *parms,
   minmax__work *wrk = filt->ctx;
 
   unsigned frames = model_get_int(&filt->config, 10, "$.options.frames");
+  if (frames < 1)
+    frames = 1;
 
   if (!wrk->buckets) {
     unsigned buckets = model_get_int(&filt->config, 1, "$.options.buckets");
+    if (buckets < 1)
+      buckets = 1;
     wrk->buckets = jd_alloc(sizeof(mma_accumulator *) * buckets);
     wrk->nbuckets = buckets;
   }

@@ -34,8 +34,14 @@ static void streak__frame(filter *filt, const y4m2_parameters *parms,
   streak__work *wrk = filt->ctx;
   double decay = model_get_real(&filt->config, 0, "$.options.decay");
 
-  if (!wrk->acc)
-    wrk->acc = jd_alloc(frame->i.size * sizeof(double));
+  if (!wrk->acc) {
+    double *acc = wrk->acc = jd_alloc(frame->i.size * sizeof(double));
+    for (unsigned pl = 0; pl < Y4M2_N_PLANE; pl++) {
+      for (unsigned i = 0; i < frame->i.plane[pl].size; i++) {
+        *acc++ = y4m2_fill[pl];
+      }
+    }
+  }
 
   for (unsigned i = 0; i < frame->i.size; i++) {
     wrk->acc[i] = wrk->acc[i] * decay + frame->buf[i];

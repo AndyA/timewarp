@@ -1,11 +1,10 @@
-[
-   {
-      "filter" : "minmax",
-      "options" : {
-         "average" : -2,
-         "frames" : 30,
-         "max" : 1.5,
-         "min" : 1.5
-      }
-   }
-]
+[{
+  "filter": "minmax",
+  "options": {
+    "average": -2,
+    "frames": 240,
+    "buckets": 8,
+    "max": 1.5,
+    "min": 1.5
+  }
+}]

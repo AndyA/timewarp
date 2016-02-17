@@ -19,6 +19,7 @@ libtimewarp_la_SOURCES = \
 	massive.h massive.c \
 	merge.h merge.c \
 	minmax.h minmax.c \
+	mma.h mma.c \
 	model.h model.c \
 	pass.h pass.c \
 	peak.h peak.c \

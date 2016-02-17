@@ -55,6 +55,9 @@ mma_accumulator *mma_put_frame(mma_accumulator *acc, const y4m2_frame *frame) {
 
 mma_accumulator *mma_put_accumulator(mma_accumulator *acc,
                                      mma_accumulator *next) {
+  if (next == NULL || next->phase == 0)
+    return acc;
+
   if (acc == NULL)
     acc = mma_new_accumulator(next->min);
 

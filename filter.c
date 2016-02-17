@@ -103,13 +103,12 @@ static void filter__control_free(filter__control *fc) {
 static void filter__control_cb(y4m2_reason reason, const y4m2_parameters *parms,
                                y4m2_frame *frame, void *ctx) {
   filter__control *fc = (filter__control *)ctx;
+  filter__update_config(&fc->stash);
   switch (reason) {
   case Y4M2_START:
-    filter__update_config(&fc->stash);
     y4m2_emit_start(fc->out, parms);
     break;
   case Y4M2_FRAME:
-    filter__update_config(&fc->stash);
     y4m2_emit_frame(fc->out, parms, frame);
     break;
   case Y4M2_END:

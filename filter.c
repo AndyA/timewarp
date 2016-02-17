@@ -105,6 +105,7 @@ static void filter__control_cb(y4m2_reason reason, const y4m2_parameters *parms,
   filter__control *fc = (filter__control *)ctx;
   switch (reason) {
   case Y4M2_START:
+    filter__update_config(&fc->stash);
     y4m2_emit_start(fc->out, parms);
     break;
   case Y4M2_FRAME:

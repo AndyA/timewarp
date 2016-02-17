@@ -356,7 +356,7 @@ void y4m2_free_output(y4m2_output *out) { jd_free(out); }
 
 static unsigned y4m2__log2(unsigned x) {
   unsigned shift = 0;
-  while (x > (1 << shift))
+  while (x > (1u << shift))
     shift++;
   return shift;
 }

@@ -203,8 +203,6 @@ static void ripple__start(filter *filt, const y4m2_parameters *parms) {
   y4m2_emit_start(filt->out, parms);
 }
 
-static uint8_t pl_fill[Y4M2_N_PLANE] = {16, 128, 128};
-
 static void ripple__frame(filter *filt, const y4m2_parameters *parms,
                           y4m2_frame *frame) {
   if (!filt->ctx)
@@ -231,11 +229,11 @@ static void ripple__frame(filter *filt, const y4m2_parameters *parms,
 
       uint8_t s0 = wrk->history[index + 0]
                        ? wrk->history[index + 0]->plane[pl][i]
-                       : pl_fill[pl];
+                       : y4m2_fill[pl];
 
       uint8_t s1 = wrk->history[index + 1]
                        ? wrk->history[index + 1]->plane[pl][i]
-                       : pl_fill[pl];
+                       : y4m2_fill[pl];
 
       *outp++ = s0 * w0 + s1 * w1;
     }

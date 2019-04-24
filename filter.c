@@ -8,9 +8,6 @@
 
 #include "filter.h"
 #include "model.h"
-#include "streak.h"
-#include "stretch.h"
-#include "yuv4mpeg2.h"
 
 static jd_var filters = JD_INIT;
 

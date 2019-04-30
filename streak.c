@@ -34,21 +34,15 @@ static void streak__frame(filter *filt, const y4m2_parameters *parms,
   streak__work *wrk = filt->ctx;
   double decay = model_get_real(&filt->config, 0, "$.options.decay");
 
-  if (!wrk->acc) {
-    double *acc = wrk->acc = jd_alloc(frame->i.size * sizeof(double));
-    for (unsigned pl = 0; pl < Y4M2_N_PLANE; pl++) {
-      for (unsigned i = 0; i < frame->i.plane[pl].size; i++) {
-        *acc++ = y4m2_fill[pl];
-      }
-    }
-  }
+  if (!wrk->acc)
+    wrk->acc = jd_alloc(frame->i.size * sizeof(double));
+
+  wrk->scale = wrk->scale * decay + 1;
 
   for (unsigned i = 0; i < frame->i.size; i++) {
     wrk->acc[i] = wrk->acc[i] * decay + frame->buf[i];
     frame->buf[i] = (uint8_t)(wrk->acc[i] / wrk->scale);
   }
-
-  wrk->scale = wrk->scale * decay + 1;
 
   y4m2_emit_frame(filt->out, parms, frame);
 }
@@ -60,7 +54,8 @@ static void streak__end(filter *filt) {
 
 void streak_register(void) {
   filter f = {
-      .start = streak__start, .frame = streak__frame, .end = streak__end};
+    .start = streak__start, .frame = streak__frame, .end = streak__end
+  };
   filter_register("streak", &f);
 }
 

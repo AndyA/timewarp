@@ -11,6 +11,8 @@
 static const char *tag[] = {"YUV4MPEG2", "FRAME"};
 
 uint8_t y4m2_fill[Y4M2_N_PLANE] = {16, 128, 128};
+uint8_t y4m2_min[Y4M2_N_PLANE] = {16, 16, 16};
+uint8_t y4m2_max[Y4M2_N_PLANE] = {235, 240, 240};
 
 y4m2_parameters *y4m2_new_parms(void) {
   return jd_alloc(sizeof(y4m2_parameters));
@@ -142,16 +144,20 @@ void y4m2_parse_frame_info(y4m2_frame_info *info,
   }
 }
 
-y4m2_frame *y4m2_new_frame_info(const y4m2_frame_info *info) {
-  y4m2_frame *frame = jd_alloc(sizeof(y4m2_frame));
-  uint8_t *buf = frame->buf = jd_alloc(info->size);
+static void y4m2__set_plane_pointers(y4m2_frame *frame) {
+  uint8_t *buf = frame->buf;
 
   for (int i = 0; i < Y4M2_N_PLANE; i++) {
     frame->plane[i] = buf;
-    buf += info->plane[i].size;
+    buf += frame->i.plane[i].size;
   }
+}
 
+y4m2_frame *y4m2_new_frame_info(const y4m2_frame_info *info) {
+  y4m2_frame *frame = jd_alloc(sizeof(y4m2_frame));
   frame->i = *info;
+  frame->buf = jd_alloc(info->size);
+  y4m2__set_plane_pointers(frame);
   return y4m2_retain_frame(frame);
 }
 
@@ -166,6 +172,7 @@ y4m2_frame *y4m2_like_frame(const y4m2_frame *frame) {
   *nf = *frame;
   nf->buf = jd_alloc(frame->i.size);
   nf->refcnt = 0;
+  y4m2__set_plane_pointers(nf);
   return y4m2_retain_frame(nf);
 }
 
